@@ -1,0 +1,50 @@
+<div class="container">
+  <header>
+    <h1>{{ title }}</h1>
+    <p>Angular POS Portal with Axios HTTP Client</p>
+  </header>
+
+  <main>
+    <div class="actions">
+      <button (click)="refreshData()" [disabled]="loading">
+        {{ loading ? 'Loading...' : 'Refresh Data' }}
+      </button>
+    </div>
+
+    <div *ngIf="error" class="error">
+      {{ error }}
+    </div>
+
+    <div class="content" *ngIf="!loading">
+      <section class="users-section">
+        <h2>Users ({{ users.length }})</h2>
+        <div *ngIf="users.length === 0" class="no-data">
+          No users found. Make sure your API is running.
+        </div>
+        <ul *ngIf="users.length > 0">
+          <li *ngFor="let user of users">
+            <strong>{{ user.username }}</strong> - {{ user.email }} ({{ user.role }})
+          </li>
+        </ul>
+      </section>
+
+      <section class="products-section">
+        <h2>Products ({{ products.length }})</h2>
+        <div *ngIf="products.length === 0" class="no-data">
+          No products found. Make sure your API is running.
+        </div>
+        <ul *ngIf="products.length > 0">
+          <li *ngFor="let product of products">
+            <strong>{{ product.name }}</strong> - ${{ product.price }} (Stock: {{ product.stock }})
+          </li>
+        </ul>
+      </section>
+    </div>
+
+    <div *ngIf="loading" class="loading">
+      Loading data from API...
+    </div>
+  </main>
+
+  <router-outlet></router-outlet>
+</div>

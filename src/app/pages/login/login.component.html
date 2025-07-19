@@ -1,0 +1,82 @@
+<div class="min-h-screen bg-base-200 flex items-center justify-center p-4">
+  <div class="card w-full max-w-md bg-base-100 shadow-xl">
+    <div class="card-body">
+      <!-- Header -->
+      <div class="text-center mb-6">
+        <h1 class="text-3xl font-bold text-primary mb-2">POS Portal</h1>
+        <p class="text-base-content/70">Sign in to your account</p>
+      </div>
+
+      <!-- Login Form -->
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-4">
+        <!-- Error Alert -->
+        <div *ngIf="error" class="alert alert-error">
+          <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none"
+            viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>{{ error }}</span>
+        </div>
+
+        <!-- Username Field -->
+        <div class="form-control">
+          <label class="label" for="username">
+            <span class="label-text">Username</span>
+          </label>
+          <input type="text" id="username" formControlName="username" class="input input-bordered w-full"
+            [class.input-error]="f['username'].invalid && f['username'].touched" placeholder="Enter your username" />
+          <div *ngIf="f['username'].invalid && f['username'].touched" class="label">
+            <span class="label-text-alt text-error">
+              <span *ngIf="f['username'].errors?.['required']">Username is required</span>
+              <span *ngIf="f['username'].errors?.['minlength']">Username must be at least 3 characters</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Password Field -->
+        <div class="form-control">
+          <label class="label" for="password">
+            <span class="label-text">Password</span>
+          </label>
+          <input type="password" id="password" formControlName="password" class="input input-bordered w-full"
+            [class.input-error]="f['password'].invalid && f['password'].touched" placeholder="Enter your password" />
+          <div *ngIf="f['password'].invalid && f['password'].touched" class="label">
+            <span class="label-text-alt text-error">
+              <span *ngIf="f['password'].errors?.['required']">Password is required</span>
+              <span *ngIf="f['password'].errors?.['minlength']">Password must be at least 6 characters</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Remember Me Checkbox -->
+        <div class="form-control">
+          <label class="label cursor-pointer justify-start gap-3">
+            <input type="checkbox" formControlName="rememberMe" class="checkbox checkbox-primary" />
+            <span class="label-text">Remember me</span>
+          </label>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary w-full" [disabled]="loading">
+          <span *ngIf="loading" class="loading loading-spinner loading-sm"></span>
+          {{ loading ? 'Signing in...' : 'Sign In' }}
+        </button>
+      </form>
+
+      <!-- Footer Links -->
+      <div class="divider"></div>
+
+      <div class="text-center space-y-2">
+        <a href="#" (click)="navigateToForgotPassword()" class="link link-primary text-sm">
+          Forgot your password?
+        </a>
+
+        <div class="text-sm">
+          Don't have an account?
+          <a href="#" (click)="navigateToRegister()" class="link link-primary">Sign up</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

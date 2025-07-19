@@ -1,0 +1,175 @@
+<div class="min-h-screen bg-base-200">
+  <!-- Navigation Header -->
+  <div class="navbar bg-base-100 shadow-lg">
+    <div class="navbar-start">
+      <h1 class="text-xl font-bold text-primary">POS Portal Dashboard</h1>
+    </div>
+    
+    <div class="navbar-end">
+      <div *ngIf="currentUser()" class="flex items-center gap-4">
+        <!-- Welcome Message -->
+        <span class="text-base-content/70 hidden md:block">
+          Welcome, {{ userDisplayName() || currentUser()?.username }}!
+        </span>
+        
+        <!-- User Dropdown -->
+        <div class="dropdown dropdown-end">
+          <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+            <div class="w-10 rounded-full bg-primary text-primary-content flex items-center justify-center">
+              <span class="text-sm font-medium">{{ userInitials() }}</span>
+            </div>
+          </div>
+          <ul tabindex="0" class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
+            <li>
+              <a (click)="navigateToProfile()" class="justify-between">
+                Profile
+                <span class="badge">{{ currentUser()?.role }}</span>
+              </a>
+            </li>
+            <li><a>Settings</a></li>
+            <li><a (click)="logout()" [class.loading]="isLoading()">
+              {{ isLoading() ? 'Logging out...' : 'Logout' }}
+            </a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="container mx-auto p-6">
+    <!-- Error Alert -->
+    <div *ngIf="error() || authError()" class="alert alert-error mb-6">
+      <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span>{{ error() || authError() }}</span>
+    </div>
+
+    <!-- Dashboard Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <!-- Users Management -->
+      <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow cursor-pointer" (click)="navigateToUsers()">
+        <div class="card-body">
+          <div class="flex items-center gap-4">
+            <div class="p-3 bg-primary/10 rounded-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="card-title text-lg">User Management</h3>
+              <p class="text-base-content/70">Manage users and permissions</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Products Management -->
+      <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow cursor-pointer" (click)="navigateToProducts()">
+        <div class="card-body">
+          <div class="flex items-center gap-4">
+            <div class="p-3 bg-secondary/10 rounded-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="card-title text-lg">Product Management</h3>
+              <p class="text-base-content/70">Manage inventory and products</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sales Dashboard -->
+      <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow cursor-pointer" (click)="navigateToSales()">
+        <div class="card-body">
+          <div class="flex items-center gap-4">
+            <div class="p-3 bg-accent/10 rounded-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a .75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="card-title text-lg">Sales Dashboard</h3>
+              <p class="text-base-content/70">Process sales and view transactions</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Profile Management -->
+      <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow cursor-pointer" (click)="navigateToProfile()">
+        <div class="card-body">
+          <div class="flex items-center gap-4">
+            <div class="p-3 bg-info/10 rounded-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-info" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="card-title text-lg">Profile Settings</h3>
+              <p class="text-base-content/70">Manage your account settings</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reports -->
+      <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow cursor-pointer" (click)="navigateToReports()">
+        <div class="card-body">
+          <div class="flex items-center gap-4">
+            <div class="p-3 bg-warning/10 rounded-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-warning" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="card-title text-lg">Reports</h3>
+              <p class="text-base-content/70">Generate and view detailed reports</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Admin Panel (if admin) -->
+      <div *ngIf="isAdmin()" class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow cursor-pointer border-2 border-primary/20" (click)="navigateToAdmin()">
+        <div class="card-body">
+          <div class="flex items-center gap-4">
+            <div class="p-3 bg-error/10 rounded-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-error" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="card-title text-lg text-error">Admin Panel</h3>
+              <p class="text-base-content/70">Advanced system administration</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="stats shadow mb-8 w-full">
+      <div class="stat">
+        <div class="stat-title">User Role</div>
+        <div class="stat-value text-primary">{{ currentUser()?.role | titlecase }}</div>
+        <div class="stat-desc">Current account type</div>
+      </div>
+      
+      <div class="stat">
+        <div class="stat-title">Email</div>
+        <div class="stat-value text-secondary text-sm">{{ currentUser()?.email }}</div>
+        <div class="stat-desc">Account email address</div>
+      </div>
+      
+      <div class="stat">
+        <div class="stat-title">Last Login</div>
+        <div class="stat-value">Today</div>
+        <div class="stat-desc">Session activity</div>
+      </div>
+    </div>
+  </main>
+</div>
