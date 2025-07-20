@@ -1,0 +1,23 @@
+/* ===========================================================================
+   STYLES INDEX - Centralized style imports
+   =========================================================================== */
+
+/* Core Tailwind imports */
+@forward './tailwind.scss';
+
+/* Theme and configuration */
+@forward './variables.scss';
+
+/* Typography */
+@forward './fonts.scss';
+
+/* Base styles */
+@forward './base.scss';
+
+/* 
+  This file serves as a central index for all style modules.
+  You can import this single file instead of importing each module separately.
+  
+  Usage:
+  @use './styles/index';
+*/
