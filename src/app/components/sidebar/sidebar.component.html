@@ -1,0 +1,160 @@
+<!-- Sidebar overlay for mobile -->
+<div
+  class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden transition-opacity duration-300"
+  [class.opacity-0]="!isOpen"
+  [class.opacity-100]="isOpen"
+  [class.pointer-events-none]="!isOpen"
+  (click)="isOpen = false"
+></div>
+
+<!-- Sidebar -->
+<aside
+  class="fixed left-0 top-0 z-50 h-screen w-64 bg-base-200 shadow-xl transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:z-auto"
+  [class.-translate-x-full]="!isOpen"
+  [class.translate-x-0]="isOpen"
+>
+  <!-- Sidebar header -->
+  <div class="flex items-center justify-between p-4 border-b border-base-300">
+    <div class="flex items-center space-x-2">
+      <svg class="w-8 h-8 text-primary" fill="currentColor" viewBox="0 0 24 24">
+        <path
+          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
+        />
+      </svg>
+      <span class="text-xl font-bold text-primary">POS Portal</span>
+    </div>
+
+    <!-- Close button for mobile -->
+    <button
+      class="btn btn-sm btn-ghost btn-circle lg:hidden"
+      (click)="isOpen = false"
+      aria-label="Close sidebar"
+    >
+      <svg
+        class="w-5 h-5"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M6 18L18 6M6 6l12 12"
+        ></path>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Navigation menu -->
+  <nav class="flex-1 overflow-y-auto p-4">
+    <ul class="menu w-full">
+      <li *ngFor="let item of menuItems" class="mb-1">
+        <!-- Menu item without children -->
+        <a
+          *ngIf="!item.children && item.route"
+          [routerLink]="item.route"
+          routerLinkActive="active"
+          class="flex items-center space-x-3 p-3 rounded-lg hover:bg-base-300 transition-colors duration-200"
+        >
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              [attr.d]="item.icon"
+            ></path>
+          </svg>
+          <span class="font-medium">{{ item.label }}</span>
+        </a>
+
+        <!-- Menu item with children -->
+        <div *ngIf="item.children">
+          <button
+            (click)="toggleSubmenu(item.label)"
+            class="flex items-center justify-between w-full p-3 rounded-lg hover:bg-base-300 transition-colors duration-200"
+          >
+            <div class="flex items-center space-x-3">
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  [attr.d]="item.icon"
+                ></path>
+              </svg>
+              <span class="font-medium">{{ item.label }}</span>
+            </div>
+            <svg
+              class="w-4 h-4 transition-transform duration-200"
+              [class.transform]="isExpanded(item.label)"
+              [class.rotate-180]="isExpanded(item.label)"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 9l-7 7-7-7"
+              ></path>
+            </svg>
+          </button>
+
+          <!-- Submenu -->
+          <ul
+            class="ml-8 mt-2 space-y-1 overflow-hidden transition-all duration-300"
+            [class.max-h-0]="!isExpanded(item.label)"
+            [class.max-h-96]="isExpanded(item.label)"
+            [class.opacity-0]="!isExpanded(item.label)"
+            [class.opacity-100]="isExpanded(item.label)"
+          >
+            <li *ngFor="let child of item.children">
+              <a
+                [routerLink]="child.route"
+                routerLinkActive="active"
+                class="block p-2 rounded-lg hover:bg-base-300 transition-colors duration-200 text-sm"
+              >
+                {{ child.label }}
+              </a>
+            </li>
+          </ul>
+        </div>
+      </li>
+    </ul>
+
+    <!-- Logout button -->
+    <div class="border-t border-base-300 mt-8 pt-4">
+      <button
+        (click)="onLogout()"
+        class="flex items-center space-x-3 w-full p-3 rounded-lg hover:bg-error hover:text-error-content transition-colors duration-200 text-error"
+      >
+        <svg
+          class="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+          ></path>
+        </svg>
+        <span class="font-medium">Logout</span>
+      </button>
+    </div>
+  </nav>
+</aside>

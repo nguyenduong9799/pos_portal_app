@@ -1,6 +1,2 @@
-/* ===========================================================================
-   MAIN STYLES ENTRY POINT
-   =========================================================================== */
-
-/* Import all modular styles */
-@use './styles/index.scss';
+@use "tailwindcss";
+@plugin "daisyui";

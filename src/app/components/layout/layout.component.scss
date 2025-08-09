@@ -1,0 +1,35 @@
+// Layout specific styles
+.min-h-screen {
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+  overflow-x: hidden;
+
+  .container {
+    max-width: 100%;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+
+    @media (min-width: 1024px) {
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+  }
+}
+
+// Responsive adjustments
+@media (min-width: 1024px) {
+  main {
+    margin-left: 16rem; // 64 * 0.25rem = 16rem for sidebar width
+  }
+}
+
+// Smooth transitions
+* {
+  transition-property: margin, transform;
+  transition-duration: 300ms;
+  transition-timing-function: ease-in-out;
+}

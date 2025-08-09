@@ -1,0 +1,16 @@
+<div class="min-h-screen bg-base-100">
+  <!-- Navbar -->
+  <app-navbar (toggleSidebar)="toggleSidebar()"></app-navbar>
+
+  <div class="flex">
+    <!-- Sidebar -->
+    <app-sidebar [isOpen]="sidebarOpen" (click)="closeSidebar()"> </app-sidebar>
+
+    <!-- Main content -->
+    <main class="flex-1 lg:ml-0 transition-all duration-300 ease-in-out">
+      <div class="container mx-auto p-6">
+        <router-outlet></router-outlet>
+      </div>
+    </main>
+  </div>
+</div>

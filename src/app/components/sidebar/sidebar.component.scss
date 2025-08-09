@@ -1,0 +1,45 @@
+// Sidebar specific styles
+aside {
+  backdrop-filter: blur(10px);
+}
+
+.menu {
+  li {
+    a {
+      transition: all 0.2s ease-in-out;
+      border-radius: 0.5rem;
+
+      &:hover {
+        transform: translateX(4px);
+      }
+
+      &.active {
+        background: theme("colors.primary");
+        color: theme("colors.primary-content");
+        font-weight: 600;
+
+        svg {
+          transform: scale(1.1);
+        }
+      }
+    }
+
+    button {
+      &:hover {
+        transform: translateX(2px);
+      }
+    }
+  }
+}
+
+// Smooth transitions for submenu
+.overflow-hidden {
+  transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+// Mobile responsive adjustments
+@media (max-width: 1024px) {
+  aside {
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  }
+}

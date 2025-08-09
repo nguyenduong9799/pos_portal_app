@@ -1,0 +1,22 @@
+// Navbar specific styles
+.navbar {
+  backdrop-filter: blur(10px);
+
+  .avatar {
+    transition: transform 0.2s ease-in-out;
+
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+}
+
+.menu {
+  li a {
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      transform: translateY(-1px);
+    }
+  }
+}
