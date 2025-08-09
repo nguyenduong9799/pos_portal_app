@@ -1,14 +1,4 @@
-// Global app styles
-@import "tailwindcss";
-@plugin "daisyui";
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+// App component specific styles
+// Note: Tailwind CSS and DaisyUI are already available globally via styles.scss
 
-body {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  line-height: 1.5;
-  color: #333;
-}
+/* Component-specific styles can be added here if needed */
