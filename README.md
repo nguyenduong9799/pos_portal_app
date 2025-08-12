@@ -1,59 +1,117 @@
-# PosPortalApp
+# POS Portal App
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.15.
+This repository contains both the frontend and backend components of the POS Portal application.
 
-## Development server
+## Project Structure
 
-To start a local development server, run:
-
-```bash
-ng serve
+```
+pos_portal_app/
+├── frontend/          # Angular frontend application
+├── backend/           # NestJS API backend
+└── README.md         # This file
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Frontend (Angular)
 
-## Code scaffolding
+The frontend is an Angular application located in the `frontend/` directory.
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+### Prerequisites
 
-```bash
-ng generate component component-name
-```
+- Node.js (v18 or higher)
+- npm
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+### Development server
 
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
+To start the frontend development server:
 
 ```bash
-ng build
+cd frontend
+npm install
+npm start
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+The application will be available at `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
 
-## Running unit tests
+### Building
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+To build the frontend project:
 
 ```bash
-ng test
+cd frontend
+npm run build
 ```
 
-## Running end-to-end tests
+This will compile your project and store the build artifacts in the `frontend/dist/` directory.
 
-For end-to-end (e2e) testing, run:
+### Running tests
+
+To execute unit tests:
 
 ```bash
-ng e2e
+cd frontend
+npm test
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Backend (NestJS)
+
+The backend is a NestJS API application located in the `backend/` directory.
+
+### Development server
+
+To start the backend development server:
+
+```bash
+cd backend
+npm install
+npm run start:dev
+```
+
+The API will be available at `http://localhost:3000/`. The server will automatically restart when you modify any of the source files.
+
+### Building
+
+To build the backend project:
+
+```bash
+cd backend
+npm run build
+```
+
+### Running tests
+
+To execute unit tests:
+
+```bash
+cd backend
+npm test
+```
+
+To execute end-to-end tests:
+
+```bash
+cd backend
+npm run test:e2e
+```
+
+## Running Both Projects
+
+To run both the frontend and backend simultaneously, open two terminal windows:
+
+1. Terminal 1 (Backend):
+```bash
+cd backend
+npm install
+npm run start:dev
+```
+
+2. Terminal 2 (Frontend):
+```bash
+cd frontend
+npm install
+npm start
+```
 
 ## Additional Resources
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- [Angular CLI Documentation](https://angular.dev/tools/cli)
+- [NestJS Documentation](https://docs.nestjs.com/)
