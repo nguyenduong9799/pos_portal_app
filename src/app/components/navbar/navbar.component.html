@@ -1,16 +1,11 @@
-<div class="navbar bg-base-100 shadow-lg border-b border-base-300">
-  <!-- Mobile menu button -->
-  <div class="navbar-start">
-    <button
-      class="btn btn-square btn-ghost lg:hidden"
-      (click)="onToggleSidebar()"
-      aria-label="Toggle sidebar"
-    >
+<div class="navbar bg-base-100 shadow-sm">
+  <div class="flex-none">
+    <button class="btn btn-square btn-ghost" (click)="toggleSidebar.emit()">
       <svg
-        class="w-6 h-6"
+        xmlns="http://www.w3.org/2000/svg"
         fill="none"
-        stroke="currentColor"
         viewBox="0 0 24 24"
+        class="inline-block h-5 w-5 stroke-current"
       >
         <path
           stroke-linecap="round"
@@ -20,86 +15,65 @@
         ></path>
       </svg>
     </button>
-
-    <!-- Logo/Brand -->
-    <a
-      class="btn btn-ghost text-xl font-bold text-primary"
-      routerLink="/dashboard"
-    >
-      <svg class="w-8 h-8 mr-2" fill="currentColor" viewBox="0 0 24 24">
-        <path
-          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
-        />
-      </svg>
-      POS Portal
-    </a>
   </div>
-
-  <!-- Desktop navigation links -->
-  <div class="navbar-center hidden lg:flex">
-    <ul class="menu menu-horizontal px-1">
-      <li>
-        <a routerLink="/dashboard" class="hover:text-primary">Dashboard</a>
-      </li>
-      <li><a href="#" class="hover:text-primary">Orders</a></li>
-      <li><a href="#" class="hover:text-primary">Products</a></li>
-      <li><a href="#" class="hover:text-primary">Analytics</a></li>
-    </ul>
+  <div class="flex-1">
+    <a class="btn btn-ghost text-xl">POS Portal</a>
   </div>
-
-  <!-- User menu -->
-  <div class="navbar-end">
-    <!-- Notifications -->
-    <button class="btn btn-ghost btn-circle mr-2">
-      <div class="indicator">
-        <svg
-          class="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M15 17h5l-5 5v-5zM9 12l2 2 4-4m0 9.97v.02m-.01-.02h.01zm0 0H5v-2a3 3 0 013-3h.01M9 12l2 2 4-4m5.99 6.97h.01v.01h-.01v-.01zM15 3.29V5a2 2 0 01-2 2H9a2 2 0 01-2-2V3.29a1 1 0 011.45-.9l1.55.78 1.55-.78A1 1 0 0115 3.29z"
-          ></path>
-        </svg>
-        <span class="badge badge-xs badge-primary indicator-item"></span>
+  <div class="flex-none">
+    <div class="dropdown dropdown-end">
+      <div tabindex="0" role="button" class="btn btn-ghost btn-circle">
+        <div class="indicator">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+            />
+          </svg>
+          <span class="badge badge-sm indicator-item">8</span>
+        </div>
       </div>
-    </button>
-
-    <!-- User dropdown -->
+      <div
+        tabindex="0"
+        class="card card-compact dropdown-content bg-base-100 z-1 mt-3 w-52 shadow"
+      >
+        <div class="card-body">
+          <span class="text-lg font-bold">8 Items</span>
+          <span class="text-info">Subtotal: $999</span>
+          <div class="card-actions">
+            <button class="btn btn-primary btn-block">View cart</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="dropdown dropdown-end">
       <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
         <div class="w-10 rounded-full">
-          <div
-            class="bg-primary text-primary-content rounded-full w-10 h-10 flex items-center justify-center"
-          >
-            <span class="text-sm font-semibold">{{
-              (user$ | async)?.firstName?.charAt(0) ||
-                (user$ | async)?.username?.charAt(0) ||
-                "U"
-            }}</span>
-          </div>
+          <img
+            alt="Tailwind CSS Navbar component"
+            src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+          />
         </div>
       </div>
       <ul
         tabindex="0"
-        class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow-lg border border-base-300"
+        class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
       >
-        <li class="menu-title">
-          <span
-            >{{ (user$ | async)?.firstName }}
-            {{
-              (user$ | async)?.lastName || (user$ | async)?.username || "User"
-            }}</span
-          >
+        <li>
+          <a class="justify-between">
+            Profile
+            <span class="badge">New</span>
+          </a>
         </li>
-        <li><a>Profile</a></li>
         <li><a>Settings</a></li>
-        <li><hr class="border-base-300" /></li>
-        <li><a (click)="onLogout()" class="text-error">Logout</a></li>
+        <li><a (click)="onLogout()">Logout</a></li>
       </ul>
     </div>
   </div>

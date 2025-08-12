@@ -37,19 +37,18 @@ export class HttpService {
     // Response interceptor
     this.axiosInstance.interceptors.response.use(
       (response: any) => {
-        console.log('Response received:', response);
         return response;
       },
       (error: any) => {
         console.error('Response error:', error);
-        
+
         // Handle common error responses
         if (error.response?.status === 401) {
           // Handle unauthorized access
           localStorage.removeItem('authToken');
           // Redirect to login or emit event
         }
-        
+
         return Promise.reject(error);
       }
     );

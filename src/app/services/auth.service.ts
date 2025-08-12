@@ -3,18 +3,10 @@ import { isPlatformBrowser } from '@angular/common';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { Observable } from 'rxjs';
 import { HttpService } from './http.service';
-import { AuthStore, User } from '../stores/auth.store';
+import { AuthStore } from '../stores/auth.store';
+import { LoginCredentials, LoginResponse, User } from '../models/auth.model';
 
-export interface LoginCredentials {
-  username: string;
-  password: string;
-}
 
-export interface LoginResponse {
-  token: string;
-  user: User;
-  refreshToken?: string;
-}
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +15,7 @@ export class AuthService {
   private authStore = inject(AuthStore);
   private platformId = inject(PLATFORM_ID);
   private isBrowser = isPlatformBrowser(this.platformId);
-  
+
   constructor(
     private httpService: HttpService
   ) {
@@ -48,14 +40,12 @@ export class AuthService {
   get store() { return this.authStore; }
   get authIsAuthenticated() { return this.authStore.isAuthenticated; }
   get authUser() { return this.authStore.user; }
-  get authToken() { return this.authStore.token; }
+  get authToken() { return this.authStore.accessToken; }
   get authLoading() { return this.authStore.isLoading; }
   get authError() { return this.authStore.error; }
   get userRole() { return this.authStore.userRole; }
   get isAdmin() { return this.authStore.isAdmin; }
   get userDisplayName() { return this.authStore.userDisplayName; }
-  get userInitials() { return this.authStore.userInitials; }
-  get userEmail() { return this.authStore.userEmail; }
 
   // Convert signals to observables for backward compatibility
   get authState$(): Observable<any> { return toObservable(this.authStore.user); }
@@ -68,7 +58,7 @@ export class AuthService {
   private initializeAuthState(): void {
     const token = this.safeLocalStorageAccess(() => localStorage.getItem('authToken'), null);
     const user = this.safeLocalStorageAccess(() => localStorage.getItem('user'), null);
-    
+
     if (token && user) {
       try {
         const parsedUser = JSON.parse(user);
@@ -107,20 +97,18 @@ export class AuthService {
       this.authStore.setError(null);
 
       const response = await this.httpService.post<LoginResponse>('/auth/login', credentials);
-      
-      // Store auth data
-      this.httpService.setAuthToken(response.token);
+
+      this.httpService.setAuthToken(response.accessToken);
+
       this.safeLocalStorageAccess(() => {
-        localStorage.setItem('authToken', response.token);
-        localStorage.setItem('user', JSON.stringify(response.user));
+        localStorage.setItem('authToken', response.accessToken);
         if (response.refreshToken) {
           localStorage.setItem('refreshToken', response.refreshToken);
         }
         return true;
       }, false);
-
-      // Update auth store
-      this.authStore.loginSuccess(response.user, response.token, response.refreshToken);
+      const user = await this.getUserProfile(response.id);
+      this.authStore.loginSuccess(user, response.accessToken, response.refreshToken);
 
       return response;
     } catch (error: any) {
@@ -155,19 +143,19 @@ export class AuthService {
       this.authStore.setError(null);
 
       const response = await this.httpService.post<LoginResponse>('/auth/register', userData);
-      
+
       // Auto-login after registration
-      this.httpService.setAuthToken(response.token);
+      this.httpService.setAuthToken(response.accessToken);
       this.safeLocalStorageAccess(() => {
-        localStorage.setItem('authToken', response.token);
-        localStorage.setItem('user', JSON.stringify(response.user));
+        localStorage.setItem('authToken', response.accessToken);
+
         if (response.refreshToken) {
           localStorage.setItem('refreshToken', response.refreshToken);
         }
         return true;
       }, false);
-
-      this.authStore.loginSuccess(response.user, response.token, response.refreshToken);
+      const user = await this.getUserProfile(response.id);
+      this.authStore.loginSuccess(user, response.accessToken, response.refreshToken);
 
       return response;
     } catch (error: any) {
@@ -222,7 +210,7 @@ export class AuthService {
 
   // Get current token
   getToken(): string | null {
-    return this.authStore.token();
+    return this.authStore.accessToken();
   }
 
   // Check user role
@@ -235,31 +223,7 @@ export class AuthService {
     return this.authStore.hasAnyRole(roles);
   }
 
-  // Update user profile
-  async updateProfile(userData: Partial<User>): Promise<User> {
-    try {
-      this.authStore.setLoading(true);
-      this.authStore.setError(null);
 
-      const response = await this.httpService.put<User>('/auth/profile', userData);
-      
-      // Update stored user data
-      this.safeLocalStorageAccess(() => {
-        localStorage.setItem('user', JSON.stringify(response));
-        return true;
-      }, false);
-      
-      // Update auth store
-      this.authStore.updateUser(response);
-
-      return response;
-    } catch (error: any) {
-      this.authStore.setError(error.message || 'Profile update failed');
-      throw error;
-    } finally {
-      this.authStore.setLoading(false);
-    }
-  }
 
   // Change password
   async changePassword(currentPassword: string, newPassword: string): Promise<void> {
@@ -323,4 +287,14 @@ export class AuthService {
       this.authStore.setLoading(false);
     }
   }
+
+  async getUserProfile(id: string): Promise<User> {
+    const response = await this.httpService.get<User>(`/accounts/${id}`);
+    if (response) {
+      localStorage.setItem('user', JSON.stringify(response));
+    }
+    return response;
+  }
 }
+
+

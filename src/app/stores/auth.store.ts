@@ -1,72 +1,46 @@
 import { computed } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 
-export interface User {
-  id: string;
-  username: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  role: string;
-  permissions: string[];
-  avatar?: string;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
+import { User } from '../models/auth.model';
+
 
 export interface AuthState {
   user: User | null;
-  token: string | null;
+  accessToken: string | null;
   refreshToken: string | null;
+  userStatus: string | null;
   isLoading: boolean;
   error: string | null;
+  role: string | null;
+  picUrl: string | null;
   isAuthenticated: boolean;
 }
 
 const initialState: AuthState = {
   user: null,
-  token: null,
+  accessToken: null,
   refreshToken: null,
+  userStatus: null,
   isLoading: false,
   error: null,
+  role: null,
+  picUrl: null,
   isAuthenticated: false,
 };
 
 export const AuthStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
-  withComputed(({ user }) => ({
-    // Computed values derived from state
+  withComputed(({ role, user, userStatus }) => ({
+
     userDisplayName: computed(() => {
-      const currentUser = user();
-      if (!currentUser) return '';
-      return `${currentUser.firstName} ${currentUser.lastName}`.trim() || currentUser.username;
+      return user()?.name + (role() ? ` (${role()})` : '');
     }),
-
-    userInitials: computed(() => {
-      const currentUser = user();
-      if (!currentUser) return '';
-      const firstName = currentUser.firstName?.charAt(0)?.toUpperCase() || '';
-      const lastName = currentUser.lastName?.charAt(0)?.toUpperCase() || '';
-      return firstName + lastName || currentUser.username?.charAt(0)?.toUpperCase() || '?';
-    }),
-
-    userRole: computed(() => user()?.role || ''),
-
-    isAdmin: computed(() => user()?.role === 'admin'),
-
-    hasPermission: computed(() => (permission: string) => {
-      const currentUser = user();
-      return currentUser?.permissions?.includes(permission) || false;
-    }),
-
-    userEmail: computed(() => user()?.email || ''),
-
-    isUserActive: computed(() => user()?.isActive || false),
+    userRole: computed(() => role()),
+    isAdmin: computed(() => role() === 'SysAdmin'),
+    isUserActive: computed(() => userStatus() === 'Active'),
   })),
   withMethods((store) => ({
-    // Authentication methods
     setLoading(loading: boolean) {
       patchState(store, { isLoading: loading });
     },
@@ -79,11 +53,11 @@ export const AuthStore = signalStore(
       patchState(store, { error: null });
     },
 
-    loginSuccess(user: User, token: string, refreshToken?: string) {
+    loginSuccess(user: User, accessToken: string, refreshToken?: string) {
       patchState(store, {
         user,
-        token,
-        refreshToken: refreshToken || null,
+        accessToken,
+        refreshToken: refreshToken || store.refreshToken(),
         isAuthenticated: true,
         isLoading: false,
         error: null,
@@ -93,8 +67,11 @@ export const AuthStore = signalStore(
     loginFailure(error: string) {
       patchState(store, {
         user: null,
-        token: null,
+        accessToken: null,
         refreshToken: null,
+        userStatus: null,
+        role: null,
+        picUrl: null,
         isAuthenticated: false,
         isLoading: false,
         error,
@@ -104,54 +81,35 @@ export const AuthStore = signalStore(
     logout() {
       patchState(store, {
         user: null,
-        token: null,
+        accessToken: null,
         refreshToken: null,
+        userStatus: null,
+        role: null,
+        picUrl: null,
         isAuthenticated: false,
         isLoading: false,
         error: null,
       });
     },
 
-    updateUser(user: User) {
-      patchState(store, { user });
-    },
-
-    updateToken(token: string, refreshToken?: string) {
+    updateToken(accessToken: string, refreshToken?: string) {
       patchState(store, {
-        token,
+        accessToken,
         refreshToken: refreshToken || store.refreshToken(),
       });
     },
 
-    // Profile management methods
-    updateProfile(updates: Partial<User>) {
-      const currentUser = store.user();
-      if (currentUser) {
-        patchState(store, {
-          user: { ...currentUser, ...updates },
-        });
-      }
-    },
 
     // Permission checking methods
     hasRole(role: string): boolean {
-      return store.user()?.role === role || false;
+      return store.role() === role || false;
     },
 
     hasAnyRole(roles: string[]): boolean {
-      const userRole = store.user()?.role;
+      const userRole = store.role();
       return userRole ? roles.includes(userRole) : false;
     },
 
-    hasPermissions(permissions: string[]): boolean {
-      const userPermissions = store.user()?.permissions || [];
-      return permissions.every(permission => userPermissions.includes(permission));
-    },
-
-    hasAnyPermission(permissions: string[]): boolean {
-      const userPermissions = store.user()?.permissions || [];
-      return permissions.some(permission => userPermissions.includes(permission));
-    },
 
     // State restoration (for app initialization)
     restoreState(state: Partial<AuthState>) {

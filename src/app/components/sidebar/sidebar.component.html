@@ -1,160 +1,293 @@
-<!-- Sidebar overlay for mobile -->
-<div
-  class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden transition-opacity duration-300"
-  [class.opacity-0]="!isOpen"
-  [class.opacity-100]="isOpen"
-  [class.pointer-events-none]="!isOpen"
-  (click)="isOpen = false"
-></div>
-
-<!-- Sidebar -->
-<aside
-  class="fixed left-0 top-0 z-50 h-screen w-64 bg-base-200 shadow-xl transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:z-auto"
-  [class.-translate-x-full]="!isOpen"
-  [class.translate-x-0]="isOpen"
->
-  <!-- Sidebar header -->
-  <div class="flex items-center justify-between p-4 border-b border-base-300">
-    <div class="flex items-center space-x-2">
-      <svg class="w-8 h-8 text-primary" fill="currentColor" viewBox="0 0 24 24">
-        <path
-          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
-        />
-      </svg>
-      <span class="text-xl font-bold text-primary">POS Portal</span>
+<div class="sidebar" [class.collapsed]="!isOpen">
+  <div class="sidebar-header">
+    <h3 *ngIf="isOpen">POS Portal</h3>
+    <div *ngIf="!isOpen" class="sidebar-icon">
+      <i class="fas fa-store"></i>
     </div>
-
-    <!-- Close button for mobile -->
-    <button
-      class="btn btn-sm btn-ghost btn-circle lg:hidden"
-      (click)="isOpen = false"
-      aria-label="Close sidebar"
-    >
-      <svg
-        class="w-5 h-5"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M6 18L18 6M6 6l12 12"
-        ></path>
-      </svg>
-    </button>
   </div>
 
-  <!-- Navigation menu -->
-  <nav class="flex-1 overflow-y-auto p-4">
-    <ul class="menu w-full">
-      <li *ngFor="let item of menuItems" class="mb-1">
-        <!-- Menu item without children -->
+  <nav class="sidebar-nav">
+    <ul class="nav-list">
+      <!-- Dashboard -->
+      <li class="nav-item">
         <a
-          *ngIf="!item.children && item.route"
-          [routerLink]="item.route"
+          routerLink="/dashboard"
+          class="nav-link"
           routerLinkActive="active"
-          class="flex items-center space-x-3 p-3 rounded-lg hover:bg-base-300 transition-colors duration-200"
+          [title]="!isOpen ? 'Dashboard' : ''"
         >
-          <svg
-            class="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              [attr.d]="item.icon"
-            ></path>
-          </svg>
-          <span class="font-medium">{{ item.label }}</span>
+          <i class="icon fas fa-tachometer-alt"></i>
+          <span *ngIf="isOpen">Dashboard</span>
         </a>
+      </li>
 
-        <!-- Menu item with children -->
-        <div *ngIf="item.children">
-          <button
-            (click)="toggleSubmenu(item.label)"
-            class="flex items-center justify-between w-full p-3 rounded-lg hover:bg-base-300 transition-colors duration-200"
-          >
-            <div class="flex items-center space-x-3">
-              <svg
-                class="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  [attr.d]="item.icon"
-                ></path>
-              </svg>
-              <span class="font-medium">{{ item.label }}</span>
-            </div>
-            <svg
-              class="w-4 h-4 transition-transform duration-200"
-              [class.transform]="isExpanded(item.label)"
-              [class.rotate-180]="isExpanded(item.label)"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+      <!-- Sales Menu -->
+      <li
+        class="nav-item has-submenu"
+        [class.expanded]="salesMenuOpen && isOpen"
+      >
+        <a
+          (click)="isOpen ? toggleSubmenu('sales') : null"
+          routerLink="/sales"
+          [routerLinkActive]="!isOpen ? 'active' : ''"
+          class="nav-link"
+          [title]="!isOpen ? 'Sales' : ''"
+        >
+          <i class="icon fas fa-cash-register"></i>
+          <span *ngIf="isOpen">Sales</span>
+          <i
+            *ngIf="isOpen"
+            class="arrow fas fa-chevron-down"
+            [class.rotated]="salesMenuOpen"
+          ></i>
+        </a>
+        <ul *ngIf="isOpen" class="submenu" [class.show]="salesMenuOpen">
+          <li>
+            <a routerLink="/sales/pos" routerLinkActive="active"
+              >Point of Sale</a
             >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M19 9l-7 7-7-7"
-              ></path>
-            </svg>
-          </button>
+          </li>
+          <li>
+            <a routerLink="/sales/orders" routerLinkActive="active">Orders</a>
+          </li>
+          <li>
+            <a routerLink="/sales/invoices" routerLinkActive="active"
+              >Invoices</a
+            >
+          </li>
+          <li>
+            <a routerLink="/sales/receipts" routerLinkActive="active"
+              >Receipts</a
+            >
+          </li>
+          <li>
+            <a routerLink="/sales/refunds" routerLinkActive="active">Refunds</a>
+          </li>
+        </ul>
+      </li>
 
-          <!-- Submenu -->
-          <ul
-            class="ml-8 mt-2 space-y-1 overflow-hidden transition-all duration-300"
-            [class.max-h-0]="!isExpanded(item.label)"
-            [class.max-h-96]="isExpanded(item.label)"
-            [class.opacity-0]="!isExpanded(item.label)"
-            [class.opacity-100]="isExpanded(item.label)"
-          >
-            <li *ngFor="let child of item.children">
-              <a
-                [routerLink]="child.route"
-                routerLinkActive="active"
-                class="block p-2 rounded-lg hover:bg-base-300 transition-colors duration-200 text-sm"
-              >
-                {{ child.label }}
-              </a>
-            </li>
-          </ul>
-        </div>
+      <!-- Inventory Menu -->
+      <li
+        class="nav-item has-submenu"
+        [class.expanded]="inventoryMenuOpen && isOpen"
+      >
+        <a
+          (click)="isOpen ? toggleSubmenu('inventory') : null"
+          routerLink="/inventory"
+          [routerLinkActive]="!isOpen ? 'active' : ''"
+          class="nav-link"
+          [title]="!isOpen ? 'Inventory' : ''"
+        >
+          <i class="icon fas fa-boxes"></i>
+          <span *ngIf="isOpen">Inventory</span>
+          <i
+            *ngIf="isOpen"
+            class="arrow fas fa-chevron-down"
+            [class.rotated]="inventoryMenuOpen"
+          ></i>
+        </a>
+        <ul *ngIf="isOpen" class="submenu" [class.show]="inventoryMenuOpen">
+          <li>
+            <a routerLink="/inventory/products" routerLinkActive="active"
+              >Products</a
+            >
+          </li>
+          <li>
+            <a routerLink="/inventory/categories" routerLinkActive="active"
+              >Categories</a
+            >
+          </li>
+          <li>
+            <a routerLink="/inventory/stock" routerLinkActive="active"
+              >Stock Management</a
+            >
+          </li>
+          <li>
+            <a routerLink="/inventory/suppliers" routerLinkActive="active"
+              >Suppliers</a
+            >
+          </li>
+          <li>
+            <a routerLink="/inventory/purchase-orders" routerLinkActive="active"
+              >Purchase Orders</a
+            >
+          </li>
+        </ul>
+      </li>
+
+      <!-- Customers Menu -->
+      <li
+        class="nav-item has-submenu"
+        [class.expanded]="customersMenuOpen && isOpen"
+      >
+        <a
+          (click)="isOpen ? toggleSubmenu('customers') : null"
+          routerLink="/customers"
+          [routerLinkActive]="!isOpen ? 'active' : ''"
+          class="nav-link"
+          [title]="!isOpen ? 'Customers' : ''"
+        >
+          <i class="icon fas fa-users"></i>
+          <span *ngIf="isOpen">Customers</span>
+          <i
+            *ngIf="isOpen"
+            class="arrow fas fa-chevron-down"
+            [class.rotated]="customersMenuOpen"
+          ></i>
+        </a>
+        <ul *ngIf="isOpen" class="submenu" [class.show]="customersMenuOpen">
+          <li>
+            <a routerLink="/customers/list" routerLinkActive="active"
+              >Customer List</a
+            >
+          </li>
+          <li>
+            <a routerLink="/customers/groups" routerLinkActive="active"
+              >Customer Groups</a
+            >
+          </li>
+          <li>
+            <a routerLink="/customers/loyalty" routerLinkActive="active"
+              >Loyalty Program</a
+            >
+          </li>
+        </ul>
+      </li>
+
+      <!-- Reports Menu -->
+      <li
+        class="nav-item has-submenu"
+        [class.expanded]="reportsMenuOpen && isOpen"
+      >
+        <a
+          (click)="isOpen ? toggleSubmenu('reports') : null"
+          routerLink="/reports"
+          [routerLinkActive]="!isOpen ? 'active' : ''"
+          class="nav-link"
+          [title]="!isOpen ? 'Reports' : ''"
+        >
+          <i class="icon fas fa-chart-line"></i>
+          <span *ngIf="isOpen">Reports</span>
+          <i
+            *ngIf="isOpen"
+            class="arrow fas fa-chevron-down"
+            [class.rotated]="reportsMenuOpen"
+          ></i>
+        </a>
+        <ul *ngIf="isOpen" class="submenu" [class.show]="reportsMenuOpen">
+          <li>
+            <a routerLink="/reports/sales" routerLinkActive="active"
+              >Sales Reports</a
+            >
+          </li>
+          <li>
+            <a routerLink="/reports/inventory" routerLinkActive="active"
+              >Inventory Reports</a
+            >
+          </li>
+          <li>
+            <a routerLink="/reports/customer" routerLinkActive="active"
+              >Customer Reports</a
+            >
+          </li>
+          <li>
+            <a routerLink="/reports/financial" routerLinkActive="active"
+              >Financial Reports</a
+            >
+          </li>
+        </ul>
+      </li>
+
+      <!-- Settings Menu -->
+      <li
+        class="nav-item has-submenu"
+        [class.expanded]="settingsMenuOpen && isOpen"
+      >
+        <a
+          (click)="isOpen ? toggleSubmenu('settings') : null"
+          routerLink="/settings"
+          [routerLinkActive]="!isOpen ? 'active' : ''"
+          class="nav-link"
+          [title]="!isOpen ? 'Settings' : ''"
+        >
+          <i class="icon fas fa-cog"></i>
+          <span *ngIf="isOpen">Settings</span>
+          <i
+            *ngIf="isOpen"
+            class="arrow fas fa-chevron-down"
+            [class.rotated]="settingsMenuOpen"
+          ></i>
+        </a>
+        <ul *ngIf="isOpen" class="submenu" [class.show]="settingsMenuOpen">
+          <li>
+            <a routerLink="/settings/general" routerLinkActive="active"
+              >General</a
+            >
+          </li>
+          <li>
+            <a routerLink="/settings/taxes" routerLinkActive="active"
+              >Tax Settings</a
+            >
+          </li>
+          <li>
+            <a routerLink="/settings/payment-methods" routerLinkActive="active"
+              >Payment Methods</a
+            >
+          </li>
+          <li>
+            <a routerLink="/settings/store" routerLinkActive="active"
+              >Store Settings</a
+            >
+          </li>
+          <li>
+            <a routerLink="/settings/users" routerLinkActive="active"
+              >User Management</a
+            >
+          </li>
+          <li>
+            <a routerLink="/settings/backup" routerLinkActive="active"
+              >Backup & Restore</a
+            >
+          </li>
+        </ul>
+      </li>
+
+      <!-- Help & Support -->
+      <li class="nav-item">
+        <a
+          routerLink="/help"
+          class="nav-link"
+          routerLinkActive="active"
+          [title]="!isOpen ? 'Help & Support' : ''"
+        >
+          <i class="icon fas fa-question-circle"></i>
+          <span *ngIf="isOpen">Help & Support</span>
+        </a>
       </li>
     </ul>
-
-    <!-- Logout button -->
-    <div class="border-t border-base-300 mt-8 pt-4">
-      <button
-        (click)="onLogout()"
-        class="flex items-center space-x-3 w-full p-3 rounded-lg hover:bg-error hover:text-error-content transition-colors duration-200 text-error"
-      >
-        <svg
-          class="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-          ></path>
-        </svg>
-        <span class="font-medium">Logout</span>
-      </button>
-    </div>
   </nav>
-</aside>
+
+  <div class="sidebar-footer" *ngIf="isOpen">
+    <div class="user-info">
+      <img
+        [src]="userPicUrl || '/assets/default-avatar.png'"
+        alt="User Avatar"
+        class="user-avatar"
+      />
+      <div class="user-details">
+        <span class="user-name">{{ userName }}</span>
+        <span class="user-role">{{ userRole }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Collapsed user info -->
+  <div class="sidebar-footer-collapsed" *ngIf="!isOpen">
+    <img
+      [src]="userPicUrl || '/assets/default-avatar.png'"
+      alt="User Avatar"
+      class="user-avatar-small"
+      [title]="userName + ' (' + userRole + ')'"
+    />
+  </div>
+</div>

@@ -1,12 +1,12 @@
 import { Component, Output, EventEmitter, inject } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
     selector: 'app-navbar',
     standalone: true,
-    imports: [CommonModule, RouterLink],
+    imports: [CommonModule,],
     templateUrl: './navbar.component.html',
     styleUrl: './navbar.component.scss'
 })
@@ -16,7 +16,7 @@ export class NavbarComponent {
     private authService = inject(AuthService);
     private router = inject(Router);
 
-    user$ = this.authService.user$;
+    user$ = this.authService.userDisplayName;
 
     onToggleSidebar() {
         this.toggleSidebar.emit();
