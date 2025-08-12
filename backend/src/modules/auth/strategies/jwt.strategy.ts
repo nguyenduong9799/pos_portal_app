@@ -3,13 +3,13 @@ import { PassportStrategy } from '@nestjs/passport';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { User } from '../../../entities/user.entity';
+import { Account } from '../../../entities';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
+    @InjectRepository(Account)
+    private accountRepository: Repository<Account>,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -19,14 +19,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-    const user = await this.userRepository.findOne({
+    const account = await this.accountRepository.findOne({
       where: { id: payload.sub },
     });
 
-    if (!user || !user.isActive) {
+    if (!account || account.status !== 'Active') {
       throw new UnauthorizedException('User not found or inactive');
     }
 
-    return user;
+    return account;
   }
 }

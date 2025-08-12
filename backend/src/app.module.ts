@@ -1,11 +1,52 @@
-import { Module } from '@nestjs/common';
+import { Module, Session } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { User, Product, Category, Customer, Order, OrderItem, Payment } from './entities';
 import { ProductsModule } from './modules/products/products.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { Collection, Transaction } from 'typeorm';
+import {
+  Account,
+  BlogPost,
+  Brand,
+  BrandAccount,
+  BrandPartner,
+  BrandPaymentMapping,
+  Categories,
+  Category,
+  CollectionProduct,
+  Customers,
+  EfMigrationsHistory,
+  ExtraCategory,
+  GroupProduct,
+  Menu,
+  MenuProduct,
+  MenuStore,
+  Order,
+  OrderDetail,
+  OrderHistory,
+  OrderItems,
+  OrderUser,
+  Orders,
+  Payment,
+  PaymentType,
+  Payments,
+  Product,
+  ProductInGroup,
+  Products,
+  Promotion,
+  PromotionOrderMapping,
+  PromotionProductMapping,
+  Role,
+  Store,
+  StoreAccount,
+  User,
+  Users,
+  Variant,
+  VariantOptions,
+  VariantProductMapping,
+} from './entities';
 
 @Module({
   imports: [
@@ -16,20 +57,28 @@ import { AuthModule } from './modules/auth/auth.module';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => {
-        const isTest = configService.get<string>('NODE_ENV') === 'test';
-        const isDev = configService.get<string>('NODE_ENV') === 'development';
-        
-        if (isTest || isDev) {
-          // Use SQLite for testing and development when SQL Server is not available
-          return {
-            type: 'sqlite',
-            database: ':memory:',
-            entities: [User, Product, Category, Customer, Order, OrderItem, Payment],
-            synchronize: true,
-            logging: false,
-          };
-        }
-        
+        // const isTest = configService.get<string>('NODE_ENV') === 'test';
+        // const isDev = configService.get<string>('NODE_ENV') === 'development';
+
+        // if (isTest || isDev) {
+        //   // Use SQLite for testing and development when SQL Server is not available
+        //   return {
+        //     type: 'sqlite',
+        //     database: ':memory:',
+        //     entities: [
+        //       User,
+        //       Product,
+        //       Category,
+        //       Customer,
+        //       Order,
+        //       OrderItem,
+        //       Payment,
+        //     ],
+        //     synchronize: true,
+        //     logging: false,
+        //   };
+        // }
+
         // Production SQL Server configuration
         return {
           type: 'mssql',
@@ -38,7 +87,50 @@ import { AuthModule } from './modules/auth/auth.module';
           username: configService.get<string>('DB_USERNAME'),
           password: configService.get<string>('DB_PASSWORD'),
           database: configService.get<string>('DB_DATABASE'),
-          entities: [User, Product, Category, Customer, Order, OrderItem, Payment],
+          entities: [
+            Account,
+            BlogPost,
+            Brand,
+            BrandAccount,
+            BrandPartner,
+            BrandPaymentMapping,
+            Categories,
+            Category,
+            Collection,
+            CollectionProduct,
+            Customers,
+            EfMigrationsHistory,
+            ExtraCategory,
+            GroupProduct,
+            Menu,
+            MenuProduct,
+            MenuStore,
+            Order,
+            OrderDetail,
+            OrderHistory,
+            OrderItems,
+            OrderUser,
+            Orders,
+            Payment,
+            PaymentType,
+            Payments,
+            Product,
+            ProductInGroup,
+            Products,
+            Promotion,
+            PromotionOrderMapping,
+            PromotionProductMapping,
+            Role,
+            Session,
+            Store,
+            StoreAccount,
+            Transaction,
+            User,
+            Users,
+            Variant,
+            VariantOptions,
+            VariantProductMapping,
+          ],
           synchronize: configService.get<string>('NODE_ENV') === 'development',
           logging: true,
           options: {
@@ -55,4 +147,4 @@ import { AuthModule } from './modules/auth/auth.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

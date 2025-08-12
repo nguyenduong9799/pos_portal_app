@@ -1,0 +1,214 @@
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+  <div class="card w-full max-w-md bg-base-100 shadow-2xl">
+    <div class="card-body">
+      <!-- Header -->
+      <div class="text-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">POS Portal</h1>
+        <p class="text-gray-600">Account Management</p>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs tabs-boxed mb-6">
+        <button 
+          class="tab flex-1"
+          [class.tab-active]="activeTab() === 'register'"
+          (click)="setActiveTab('register')"
+        >
+          Register
+        </button>
+        <button 
+          class="tab flex-1"
+          [class.tab-active]="activeTab() === 'forgot-password'"
+          (click)="setActiveTab('forgot-password')"
+        >
+          Forgot Password
+        </button>
+      </div>
+
+      <!-- Success Message -->
+      @if (successMessage()) {
+        <div class="alert alert-success mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>{{ successMessage() }}</span>
+        </div>
+      }
+
+      <!-- Error Message -->
+      @if (error()) {
+        <div class="alert alert-error mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>{{ error() }}</span>
+        </div>
+      }
+
+      <!-- Register Form -->
+      @if (activeTab() === 'register') {
+        <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
+          <!-- Full Name -->
+          <div class="form-control mb-4">
+            <label class="label">
+              <span class="label-text">Full Name *</span>
+            </label>
+            <input 
+              type="text" 
+              placeholder="Enter your full name" 
+              class="input input-bordered"
+              formControlName="name"
+              [class.input-error]="registerForm.get('name')?.invalid && registerForm.get('name')?.touched"
+            />
+            @if (registerForm.get('name')?.invalid && registerForm.get('name')?.touched) {
+              <label class="label">
+                <span class="label-text-alt text-error">Full name is required (min 2 characters)</span>
+              </label>
+            }
+          </div>
+
+          <!-- Email -->
+          <div class="form-control mb-4">
+            <label class="label">
+              <span class="label-text">Email *</span>
+            </label>
+            <input 
+              type="email" 
+              placeholder="Enter your email" 
+              class="input input-bordered"
+              formControlName="email"
+              [class.input-error]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched"
+            />
+            @if (registerForm.get('email')?.invalid && registerForm.get('email')?.touched) {
+              <label class="label">
+                <span class="label-text-alt text-error">Please enter a valid email address</span>
+              </label>
+            }
+          </div>
+
+          <!-- Phone Number -->
+          <div class="form-control mb-4">
+            <label class="label">
+              <span class="label-text">Phone Number</span>
+            </label>
+            <input 
+              type="tel" 
+              placeholder="Enter your phone number" 
+              class="input input-bordered"
+              formControlName="phoneNumber"
+            />
+          </div>
+
+          <!-- Password -->
+          <div class="form-control mb-4">
+            <label class="label">
+              <span class="label-text">Password *</span>
+            </label>
+            <input 
+              type="password" 
+              placeholder="Enter your password" 
+              class="input input-bordered"
+              formControlName="password"
+              [class.input-error]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched"
+            />
+            @if (registerForm.get('password')?.invalid && registerForm.get('password')?.touched) {
+              <label class="label">
+                <span class="label-text-alt text-error">Password must be at least 6 characters</span>
+              </label>
+            }
+          </div>
+
+          <!-- Confirm Password -->
+          <div class="form-control mb-6">
+            <label class="label">
+              <span class="label-text">Confirm Password *</span>
+            </label>
+            <input 
+              type="password" 
+              placeholder="Confirm your password" 
+              class="input input-bordered"
+              formControlName="confirmPassword"
+              [class.input-error]="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched"
+            />
+            @if (registerForm.get('confirmPassword')?.errors?.['passwordMismatch'] && registerForm.get('confirmPassword')?.touched) {
+              <label class="label">
+                <span class="label-text-alt text-error">Passwords do not match</span>
+              </label>
+            }
+          </div>
+
+          <!-- Submit Button -->
+          <button 
+            type="submit" 
+            class="btn btn-primary w-full"
+            [disabled]="registerForm.invalid || isLoading()"
+            [class.loading]="isLoading()"
+          >
+            @if (isLoading()) {
+              Creating Account...
+            } @else {
+              Create Account
+            }
+          </button>
+        </form>
+      }
+
+      <!-- Forgot Password Form -->
+      @if (activeTab() === 'forgot-password') {
+        <form [formGroup]="forgotPasswordForm" (ngSubmit)="onForgotPassword()">
+          <div class="text-center mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m0 0a2 2 0 012 2v6a2 2 0 01-2 2H7a2 2 0 01-2-2V9a2 2 0 012-2m0 0V7a2 2 0 012-2h4a2 2 0 012 2v2M9 12l2 2 4-4" />
+            </svg>
+            <p class="text-gray-600">
+              Enter your email address and we'll send you instructions to reset your password.
+            </p>
+          </div>
+
+          <!-- Email -->
+          <div class="form-control mb-6">
+            <label class="label">
+              <span class="label-text">Email Address *</span>
+            </label>
+            <input 
+              type="email" 
+              placeholder="Enter your email" 
+              class="input input-bordered"
+              formControlName="email"
+              [class.input-error]="forgotPasswordForm.get('email')?.invalid && forgotPasswordForm.get('email')?.touched"
+            />
+            @if (forgotPasswordForm.get('email')?.invalid && forgotPasswordForm.get('email')?.touched) {
+              <label class="label">
+                <span class="label-text-alt text-error">Please enter a valid email address</span>
+              </label>
+            }
+          </div>
+
+          <!-- Submit Button -->
+          <button 
+            type="submit" 
+            class="btn btn-primary w-full"
+            [disabled]="forgotPasswordForm.invalid || isLoading()"
+            [class.loading]="isLoading()"
+          >
+            @if (isLoading()) {
+              Sending Instructions...
+            } @else {
+              Send Reset Instructions
+            }
+          </button>
+        </form>
+      }
+
+      <!-- Back to Login -->
+      <div class="text-center mt-6">
+        <button class="btn btn-ghost btn-sm" (click)="navigateToLogin()">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back to Login
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

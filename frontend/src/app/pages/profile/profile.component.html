@@ -1,0 +1,262 @@
+<div class="container mx-auto p-6 max-w-4xl">
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold text-gray-800">User Profile</h1>
+    <button class="btn btn-primary" (click)="openChangePasswordModal()">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m0 0a2 2 0 012 2v6a2 2 0 01-2 2H7a2 2 0 01-2-2V9a2 2 0 012-2m0 0V7a2 2 0 012-2h4a2 2 0 012 2v2M9 12l2 2 4-4" />
+      </svg>
+      Change Password
+    </button>
+  </div>
+
+  <!-- Success Message -->
+  @if (successMessage()) {
+    <div class="alert alert-success mb-4">
+      <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span>{{ successMessage() }}</span>
+      <button class="btn btn-sm btn-ghost" (click)="clearMessages()">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  }
+
+  <!-- Error Message -->
+  @if (error()) {
+    <div class="alert alert-error mb-4">
+      <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span>{{ error() }}</span>
+      <button class="btn btn-sm btn-ghost" (click)="clearMessages()">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  }
+
+  @if (user(); as currentUser) {
+    <!-- Profile Card -->
+    <div class="card bg-base-100 shadow-xl">
+      <div class="card-body">
+        <div class="flex items-center space-x-6">
+          <!-- Avatar -->
+          <div class="avatar placeholder">
+            <div class="bg-neutral text-neutral-content rounded-full w-24">
+              <span class="text-2xl font-bold">
+                {{ currentUser.name.charAt(0).toUpperCase() }}
+              </span>
+            </div>
+          </div>
+
+          <!-- User Info -->
+          <div class="flex-1">
+            <h2 class="card-title text-2xl">{{ currentUser.name }}</h2>
+            <p class="text-gray-600 mb-2">{{ currentUser.username }}</p>
+            
+            <div class="flex flex-wrap gap-2 mb-4">
+              <div class="badge" [class]="getUserRoleBadgeClass(currentUser.role)">
+                {{ currentUser.role }}
+              </div>
+              <div class="badge" [class]="getUserStatusBadgeClass(currentUser.status)">
+                {{ currentUser.status }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detailed Information -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+      <!-- Personal Information -->
+      <div class="card bg-base-100 shadow-lg">
+        <div class="card-body">
+          <h3 class="card-title mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            Personal Information
+          </h3>
+          
+          <div class="space-y-4">
+            <div class="flex justify-between">
+              <span class="font-medium text-gray-600">User ID:</span>
+              <span class="font-mono">{{ currentUser.id }}</span>
+            </div>
+            
+            <div class="flex justify-between">
+              <span class="font-medium text-gray-600">Username:</span>
+              <span>{{ currentUser.username }}</span>
+            </div>
+            
+            <div class="flex justify-between">
+              <span class="font-medium text-gray-600">Full Name:</span>
+              <span>{{ currentUser.name }}</span>
+            </div>
+            
+            <div class="flex justify-between">
+              <span class="font-medium text-gray-600">Role:</span>
+              <span class="badge" [class]="getUserRoleBadgeClass(currentUser.role)">
+                {{ currentUser.role }}
+              </span>
+            </div>
+            
+            <div class="flex justify-between">
+              <span class="font-medium text-gray-600">Status:</span>
+              <span class="badge" [class]="getUserStatusBadgeClass(currentUser.status)">
+                {{ currentUser.status }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Store Information -->
+      <div class="card bg-base-100 shadow-lg">
+        <div class="card-body">
+          <h3 class="card-title mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H5m0 0h2M7 7h10M7 11h10M7 15h10" />
+            </svg>
+            Store & Brand Information
+          </h3>
+          
+          <div class="space-y-4">
+            <div class="flex justify-between">
+              <span class="font-medium text-gray-600">Store ID:</span>
+              <span class="font-mono">{{ currentUser.storeId || 'N/A' }}</span>
+            </div>
+            
+            <div class="flex justify-between">
+              <span class="font-medium text-gray-600">Store Code:</span>
+              <span>{{ currentUser.storeCode || 'N/A' }}</span>
+            </div>
+            
+            <div class="flex justify-between">
+              <span class="font-medium text-gray-600">Brand ID:</span>
+              <span class="font-mono">{{ currentUser.brandId || 'N/A' }}</span>
+            </div>
+            
+            <div class="flex justify-between">
+              <span class="font-medium text-gray-600">Brand Code:</span>
+              <span>{{ currentUser.brandCode || 'N/A' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Security Section -->
+    <div class="card bg-base-100 shadow-lg mt-6">
+      <div class="card-body">
+        <h3 class="card-title mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+          Security
+        </h3>
+        
+        <div class="flex justify-between items-center">
+          <div>
+            <p class="font-medium">Password</p>
+            <p class="text-sm text-gray-600">Last changed: Unknown</p>
+          </div>
+          <button class="btn btn-outline btn-primary" (click)="openChangePasswordModal()">
+            Change Password
+          </button>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <!-- Loading State -->
+    <div class="flex justify-center items-center py-12">
+      <span class="loading loading-spinner loading-lg"></span>
+    </div>
+  }
+
+  <!-- Change Password Modal -->
+  @if (showChangePasswordModal()) {
+    <div class="modal modal-open">
+      <div class="modal-box">
+        <h3 class="font-bold text-lg mb-4">Change Password</h3>
+        
+        <form [formGroup]="changePasswordForm" (ngSubmit)="onChangePassword()">
+          <!-- Current Password -->
+          <div class="form-control mb-4">
+            <label class="label">
+              <span class="label-text">Current Password *</span>
+            </label>
+            <input 
+              type="password" 
+              placeholder="Enter current password" 
+              class="input input-bordered"
+              formControlName="currentPassword"
+              [class.input-error]="changePasswordForm.get('currentPassword')?.invalid && changePasswordForm.get('currentPassword')?.touched"
+            />
+            @if (changePasswordForm.get('currentPassword')?.invalid && changePasswordForm.get('currentPassword')?.touched) {
+              <label class="label">
+                <span class="label-text-alt text-error">Current password is required (min 6 characters)</span>
+              </label>
+            }
+          </div>
+
+          <!-- New Password -->
+          <div class="form-control mb-4">
+            <label class="label">
+              <span class="label-text">New Password *</span>
+            </label>
+            <input 
+              type="password" 
+              placeholder="Enter new password" 
+              class="input input-bordered"
+              formControlName="newPassword"
+              [class.input-error]="changePasswordForm.get('newPassword')?.invalid && changePasswordForm.get('newPassword')?.touched"
+            />
+            @if (changePasswordForm.get('newPassword')?.invalid && changePasswordForm.get('newPassword')?.touched) {
+              <label class="label">
+                <span class="label-text-alt text-error">Password must be at least 6 characters</span>
+              </label>
+            }
+          </div>
+
+          <!-- Confirm Password -->
+          <div class="form-control mb-6">
+            <label class="label">
+              <span class="label-text">Confirm New Password *</span>
+            </label>
+            <input 
+              type="password" 
+              placeholder="Confirm new password" 
+              class="input input-bordered"
+              formControlName="confirmPassword"
+              [class.input-error]="changePasswordForm.get('confirmPassword')?.invalid && changePasswordForm.get('confirmPassword')?.touched"
+            />
+            @if (changePasswordForm.get('confirmPassword')?.errors?.['passwordMismatch'] && changePasswordForm.get('confirmPassword')?.touched) {
+              <label class="label">
+                <span class="label-text-alt text-error">Passwords do not match</span>
+              </label>
+            }
+          </div>
+
+          <div class="modal-action">
+            <button type="button" class="btn btn-ghost" (click)="closeChangePasswordModal()">Cancel</button>
+            <button 
+              type="submit" 
+              class="btn btn-primary" 
+              [disabled]="changePasswordForm.invalid || isLoading()"
+              [class.loading]="isLoading()"
+            >
+              Change Password
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>

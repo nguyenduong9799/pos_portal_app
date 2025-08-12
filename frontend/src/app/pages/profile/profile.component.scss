@@ -1,0 +1,119 @@
+/* Profile component styles */
+
+.container {
+  min-height: calc(100vh - 4rem);
+}
+
+.card {
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.avatar {
+  transition: transform 0.3s ease;
+}
+
+.avatar:hover {
+  transform: scale(1.05);
+}
+
+/* Badge styles */
+.badge-success {
+  background-color: hsl(var(--su));
+  color: hsl(var(--suc));
+}
+
+.badge-error {
+  background-color: hsl(var(--er));
+  color: hsl(var(--erc));
+}
+
+.badge-warning {
+  background-color: hsl(var(--wa));
+  color: hsl(var(--wac));
+}
+
+.badge-info {
+  background-color: hsl(var(--in));
+  color: hsl(var(--inc));
+}
+
+.badge-neutral {
+  background-color: hsl(var(--n));
+  color: hsl(var(--nc));
+}
+
+/* Form validation styles */
+.input-error {
+  border-color: hsl(var(--er));
+}
+
+.input-error:focus {
+  outline-color: hsl(var(--er));
+  border-color: hsl(var(--er));
+}
+
+/* Modal styles */
+.modal-box {
+  background-color: hsl(var(--b1));
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* Alert message styles */
+.alert {
+  transition: all 0.3s ease;
+}
+
+.alert button {
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.alert button:hover {
+  opacity: 1;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .card-body {
+    padding: 1.5rem;
+  }
+  
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .flex {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 1rem;
+  }
+  
+  .flex .btn {
+    width: 100%;
+  }
+}
+
+/* Animation for loading states */
+.loading-spinner {
+  color: hsl(var(--p));
+}
+
+/* Card title with icons */
+.card-title svg {
+  color: hsl(var(--p));
+}
+
+/* Hover effects for interactive elements */
+.btn {
+  transition: all 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}

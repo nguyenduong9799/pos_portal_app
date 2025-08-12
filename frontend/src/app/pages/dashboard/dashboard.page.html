@@ -1,0 +1,237 @@
+<div class="container mx-auto p-6">
+  <!-- Header -->
+  <div class="mb-8">
+    <h1 class="text-4xl font-bold text-gray-800 mb-2">
+      {{ getGreeting() }}{{ user()?.name ? ', ' + user()?.name : '' }}!
+    </h1>
+    <p class="text-gray-600">Welcome to your POS Portal dashboard</p>
+  </div>
+
+  <!-- API Status Banner -->
+  <div class="alert mb-6" [class]="stats().apiStatus === 'connected' ? 'alert-success' : stats().apiStatus === 'error' ? 'alert-error' : 'alert-warning'">
+    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+      @if (stats().apiStatus === 'connected') {
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      } @else if (stats().apiStatus === 'error') {
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      } @else {
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+      }
+    </svg>
+    <span>
+      @if (stats().apiStatus === 'connected') {
+        API Connection: All systems operational
+      } @else if (stats().apiStatus === 'error') {
+        API Connection: Error connecting to backend services
+      } @else {
+        API Connection: Checking status...
+      }
+    </span>
+    <div class="badge" [class]="getApiStatusClass()">
+      {{ stats().apiStatus }}
+    </div>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <!-- Total Products -->
+    <div class="stat bg-base-100 shadow-lg rounded-lg">
+      <div class="stat-figure text-primary">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+        </svg>
+      </div>
+      <div class="stat-title">Total Products</div>
+      <div class="stat-value text-primary">{{ stats().totalProducts }}</div>
+      <div class="stat-desc">In inventory</div>
+    </div>
+
+    <!-- Low Stock Products -->
+    <div class="stat bg-base-100 shadow-lg rounded-lg">
+      <div class="stat-figure text-warning">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+        </svg>
+      </div>
+      <div class="stat-title">Low Stock Alert</div>
+      <div class="stat-value text-warning">{{ stats().lowStockProducts }}</div>
+      <div class="stat-desc">Products need restocking</div>
+    </div>
+
+    <!-- Total Users -->
+    <div class="stat bg-base-100 shadow-lg rounded-lg">
+      <div class="stat-figure text-secondary">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+      </div>
+      <div class="stat-title">Active Users</div>
+      <div class="stat-value text-secondary">{{ stats().totalUsers }}</div>
+      <div class="stat-desc">Currently logged in</div>
+    </div>
+
+    <!-- API Status -->
+    <div class="stat bg-base-100 shadow-lg rounded-lg">
+      <div class="stat-figure text-info">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+        </svg>
+      </div>
+      <div class="stat-title">API Status</div>
+      <div class="stat-value text-info">{{ stats().apiStatus }}</div>
+      <div class="stat-desc">Backend connectivity</div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="mb-8">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4">Quick Actions</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      @for (action of quickActions; track action.route) {
+        <div class="card bg-base-100 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer" (click)="navigateTo(action.route)">
+          <div class="card-body">
+            <div class="flex items-center mb-4">
+              <div class="w-12 h-12 rounded-lg flex items-center justify-center text-white mr-4" [class]="action.color">
+                <i [class]="action.icon + ' text-xl'"></i>
+              </div>
+              <div>
+                <h3 class="card-title text-lg">{{ action.title }}</h3>
+              </div>
+            </div>
+            <p class="text-gray-600 mb-4">{{ action.description }}</p>
+            <div class="card-actions">
+              <button class="btn btn-primary btn-sm">
+                Open
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- API Endpoints Overview -->
+  <div class="mb-8">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4">Available APIs</h2>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Authentication APIs -->
+      <div class="card bg-base-100 shadow-lg">
+        <div class="card-body">
+          <h3 class="card-title text-lg mb-4">
+            <i class="fas fa-lock text-green-500 mr-2"></i>
+            Authentication APIs
+          </h3>
+          <div class="space-y-2">
+            <div class="flex justify-between items-center p-2 bg-base-200 rounded">
+              <span class="font-mono text-sm">POST /auth/login</span>
+              <div class="badge badge-success">Available</div>
+            </div>
+            <div class="flex justify-between items-center p-2 bg-base-200 rounded">
+              <span class="font-mono text-sm">POST /auth/register</span>
+              <div class="badge badge-success">Available</div>
+            </div>
+            <div class="flex justify-between items-center p-2 bg-base-200 rounded">
+              <span class="font-mono text-sm">POST /auth/logout</span>
+              <div class="badge badge-success">Available</div>
+            </div>
+            <div class="flex justify-between items-center p-2 bg-base-200 rounded">
+              <span class="font-mono text-sm">POST /auth/refresh</span>
+              <div class="badge badge-success">Available</div>
+            </div>
+            <div class="flex justify-between items-center p-2 bg-base-200 rounded">
+              <span class="font-mono text-sm">POST /auth/change-password</span>
+              <div class="badge badge-success">Available</div>
+            </div>
+            <div class="flex justify-between items-center p-2 bg-base-200 rounded">
+              <span class="font-mono text-sm">POST /auth/forgot-password</span>
+              <div class="badge badge-success">Available</div>
+            </div>
+            <div class="flex justify-between items-center p-2 bg-base-200 rounded">
+              <span class="font-mono text-sm">POST /auth/reset-password</span>
+              <div class="badge badge-success">Available</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Products APIs -->
+      <div class="card bg-base-100 shadow-lg">
+        <div class="card-body">
+          <h3 class="card-title text-lg mb-4">
+            <i class="fas fa-boxes text-blue-500 mr-2"></i>
+            Products APIs
+          </h3>
+          <div class="space-y-2">
+            <div class="flex justify-between items-center p-2 bg-base-200 rounded">
+              <span class="font-mono text-sm">GET /products</span>
+              <div class="badge badge-success">Available</div>
+            </div>
+            <div class="flex justify-between items-center p-2 bg-base-200 rounded">
+              <span class="font-mono text-sm">GET /products/:id</span>
+              <div class="badge badge-success">Available</div>
+            </div>
+            <div class="flex justify-between items-center p-2 bg-base-200 rounded">
+              <span class="font-mono text-sm">POST /products</span>
+              <div class="badge badge-success">Available</div>
+            </div>
+            <div class="flex justify-between items-center p-2 bg-base-200 rounded">
+              <span class="font-mono text-sm">PUT /products/:id</span>
+              <div class="badge badge-success">Available</div>
+            </div>
+            <div class="flex justify-between items-center p-2 bg-base-200 rounded">
+              <span class="font-mono text-sm">DELETE /products/:id</span>
+              <div class="badge badge-success">Available</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Account APIs -->
+      <div class="card bg-base-100 shadow-lg">
+        <div class="card-body">
+          <h3 class="card-title text-lg mb-4">
+            <i class="fas fa-user text-purple-500 mr-2"></i>
+            Account APIs
+          </h3>
+          <div class="space-y-2">
+            <div class="flex justify-between items-center p-2 bg-base-200 rounded">
+              <span class="font-mono text-sm">GET /accounts/:id</span>
+              <div class="badge badge-success">Available</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- System APIs -->
+      <div class="card bg-base-100 shadow-lg">
+        <div class="card-body">
+          <h3 class="card-title text-lg mb-4">
+            <i class="fas fa-cog text-gray-500 mr-2"></i>
+            System APIs
+          </h3>
+          <div class="space-y-2">
+            <div class="flex justify-between items-center p-2 bg-base-200 rounded">
+              <span class="font-mono text-sm">GET /</span>
+              <div class="badge badge-success">Available</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  @if (isLoading()) {
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-base-100 p-6 rounded-lg shadow-xl">
+        <div class="flex items-center space-x-4">
+          <span class="loading loading-spinner loading-lg"></span>
+          <span class="text-lg">Loading dashboard data...</span>
+        </div>
+      </div>
+    </div>
+  }
+</div>
