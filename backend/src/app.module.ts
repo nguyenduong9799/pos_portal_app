@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ProductsModule } from './modules/products/products.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { BrandsModule } from './modules/brands/brands.module';
 import { Collection, Transaction } from 'typeorm';
 import {
   Account,
@@ -143,6 +144,7 @@ import {
     }),
     ProductsModule,
     AuthModule,
+    BrandsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

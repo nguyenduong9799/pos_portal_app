@@ -3,15 +3,15 @@ import { JwtService } from '@nestjs/jwt';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AuthService } from './auth.service';
-import { User } from '../../entities/user.entity';
+import { Account } from '../../entities/Account';
 import * as bcrypt from 'bcryptjs';
 
 describe('AuthService', () => {
   let service: AuthService;
-  let userRepository: Repository<User>;
+  let accountRepository: Repository<Account>;
   let jwtService: JwtService;
 
-  const mockUserRepository = {
+  const mockAccountRepository = {
     findOne: jest.fn(),
     create: jest.fn(),
     save: jest.fn(),
@@ -28,8 +28,8 @@ describe('AuthService', () => {
       providers: [
         AuthService,
         {
-          provide: getRepositoryToken(User),
-          useValue: mockUserRepository,
+          provide: getRepositoryToken(Account),
+          useValue: mockAccountRepository,
         },
         {
           provide: JwtService,
@@ -39,7 +39,7 @@ describe('AuthService', () => {
     }).compile();
 
     service = module.get<AuthService>(AuthService);
-    userRepository = module.get<Repository<User>>(getRepositoryToken(User));
+    accountRepository = module.get<Repository<Account>>(getRepositoryToken(Account));
     jwtService = module.get<JwtService>(JwtService);
   });
 
@@ -53,21 +53,16 @@ describe('AuthService', () => {
 
   describe('validateUser', () => {
     it('should return user data without password when credentials are valid', async () => {
-      const mockUser = {
-        id: 1,
+      const mockAccount = {
+        id: '1',
         username: 'testuser',
         password: await bcrypt.hash('password', 10),
-        firstName: 'Test',
-        lastName: 'User',
-        email: 'test@example.com',
-        role: 'employee',
-        isActive: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        orders: [],
+        name: 'Test User',
+        status: 'Active',
+        role: { name: 'employee' },
       };
 
-      mockUserRepository.findOne.mockResolvedValue(mockUser);
+      mockAccountRepository.findOne.mockResolvedValue(mockAccount);
 
       const result = await service.validateUser('testuser', 'password');
 
@@ -77,7 +72,7 @@ describe('AuthService', () => {
     });
 
     it('should return null when user is not found', async () => {
-      mockUserRepository.findOne.mockResolvedValue(null);
+      mockAccountRepository.findOne.mockResolvedValue(null);
 
       const result = await service.validateUser('nonexistent', 'password');
 
