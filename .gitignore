@@ -46,6 +46,14 @@ testem.log
 backend/.env
 frontend/.env
 
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+backend/*.db
+backend/*.sqlite
+backend/*.sqlite3
+
 # System files
 .DS_Store
 Thumbs.db
