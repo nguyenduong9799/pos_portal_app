@@ -15,45 +15,57 @@ import { ProductInGroup } from "./ProductInGroup";
 import { PromotionProductMapping } from "./PromotionProductMapping";
 import { VariantProductMapping } from "./VariantProductMapping";
 
-@Index("PK_ProductId", ["id"], { unique: true })
-@Index("UX_Product_Code", ["code"], { unique: true })
-@Entity("Product", { schema: "dbo" })
+@Index("idx_product_brand_id", ["brandId"], {})
+@Index("idx_product_category_id", ["categoryId"], {})
+@Index("ux_product_code", ["code"], { unique: true })
+@Index("pk_product_id", ["id"], { unique: true })
+@Index("idx_product_parent_product_id", ["parentProductId"], {})
+@Entity("product", { schema: "public" })
 export class Product {
-  @Column("uniqueidentifier", { primary: true, name: "Id" })
+  @Column("uuid", { primary: true, name: "id" })
   id: string;
 
-  @Column("nvarchar", { name: "Code", length: 20 })
+  @Column("character varying", { name: "code", length: 20 })
   code: string;
 
-  @Column("nvarchar", { name: "Name", length: 100 })
+  @Column("character varying", { name: "name", length: 100 })
   name: string;
 
-  @Column("float", { name: "SellingPrice", precision: 53 })
+  @Column("double precision", { name: "selling_price" })
   sellingPrice: number;
 
-  @Column("nvarchar", { name: "PicURL", nullable: true })
+  @Column("text", { name: "pic_url", nullable: true })
   picUrl: string | null;
 
-  @Column("nvarchar", { name: "Status", length: 20 })
+  @Column("character varying", { name: "status", length: 20 })
   status: string;
 
-  @Column("float", { name: "HistoricalPrice", precision: 53 })
+  @Column("double precision", { name: "historical_price" })
   historicalPrice: number;
 
-  @Column("float", { name: "DiscountPrice", precision: 53 })
+  @Column("double precision", { name: "discount_price" })
   discountPrice: number;
 
-  @Column("nvarchar", { name: "Description", nullable: true })
+  @Column("text", { name: "description", nullable: true })
   description: string | null;
 
-  @Column("int", { name: "DisplayOrder" })
+  @Column("integer", { name: "display_order" })
   displayOrder: number;
 
-  @Column("nvarchar", { name: "Size", nullable: true, length: 10 })
+  @Column("character varying", { name: "size", nullable: true, length: 10 })
   size: string | null;
 
-  @Column("nvarchar", { name: "Type", length: 15 })
+  @Column("character varying", { name: "type", length: 15 })
   type: string;
+
+  @Column("uuid", { name: "parent_product_id", nullable: true })
+  parentProductId: string | null;
+
+  @Column("uuid", { name: "brand_id" })
+  brandId: string;
+
+  @Column("uuid", { name: "category_id" })
+  categoryId: string;
 
   @OneToMany(
     () => CollectionProduct,
@@ -68,15 +80,15 @@ export class Product {
   menuProducts: MenuProduct[];
 
   @ManyToOne(() => Brand, (brand) => brand.products)
-  @JoinColumn([{ name: "BrandId", referencedColumnName: "id" }])
+  @JoinColumn([{ name: "brand_id", referencedColumnName: "id" }])
   brand: Brand;
 
   @ManyToOne(() => Category, (category) => category.products)
-  @JoinColumn([{ name: "CategoryId", referencedColumnName: "id" }])
+  @JoinColumn([{ name: "category_id", referencedColumnName: "id" }])
   category: Category;
 
   @ManyToOne(() => Product, (product) => product.products)
-  @JoinColumn([{ name: "ParentProductId", referencedColumnName: "id" }])
+  @JoinColumn([{ name: "parent_product_id", referencedColumnName: "id" }])
   parentProduct: Product;
 
   @OneToMany(() => Product, (product) => product.parentProduct)

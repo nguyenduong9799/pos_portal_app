@@ -1,13 +1,13 @@
 import { Column, Entity, Index, OneToMany } from "typeorm";
 import { Account } from "./Account";
 
-@Index("PK_AccountRole_Id", ["id"], { unique: true })
-@Entity("Role", { schema: "dbo" })
+@Index("uq_role_id", ["id"], { unique: true })
+@Entity("role", { schema: "public" })
 export class Role {
-  @Column("uniqueidentifier", { primary: true, name: "Id" })
+  @Column("uuid", { primary: true, name: "id" })
   id: string;
 
-  @Column("nvarchar", { name: "Name", length: 20 })
+  @Column("character varying", { name: "name", length: 20 })
   name: string;
 
   @OneToMany(() => Account, (account) => account.role)

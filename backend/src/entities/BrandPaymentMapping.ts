@@ -2,26 +2,30 @@ import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
 import { Brand } from "./Brand";
 import { PaymentType } from "./PaymentType";
 
-@Index("BrandPaymentMapping_pk", ["id"], { unique: true })
-@Entity("BrandPaymentMapping", { schema: "dbo" })
+@Index("idx_brand_payment_mapping_brand_id", ["brandId"], {})
+@Index("brand_payment_mapping_pk", ["id"], { unique: true })
+@Entity("brand_payment_mapping", { schema: "public" })
 export class BrandPaymentMapping {
-  @Column("uniqueidentifier", { primary: true, name: "Id" })
+  @Column("uuid", { primary: true, name: "id" })
   id: string;
 
-  @Column("int", { name: "DisplayOrder" })
+  @Column("uuid", { name: "brand_id" })
+  brandId: string;
+
+  @Column("integer", { name: "display_order" })
   displayOrder: number;
 
-  @Column("varchar", { name: "Status", length: 20 })
+  @Column("character varying", { name: "status", length: 20 })
   status: string;
 
   @ManyToOne(() => Brand, (brand) => brand.brandPaymentMappings)
-  @JoinColumn([{ name: "BrandId", referencedColumnName: "id" }])
+  @JoinColumn([{ name: "brand_id", referencedColumnName: "id" }])
   brand: Brand;
 
   @ManyToOne(
     () => PaymentType,
     (paymentType) => paymentType.brandPaymentMappings
   )
-  @JoinColumn([{ name: "PaymentType", referencedColumnName: "type" }])
+  @JoinColumn([{ name: "payment_type", referencedColumnName: "type" }])
   paymentType: PaymentType;
 }

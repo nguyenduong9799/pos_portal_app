@@ -10,54 +10,69 @@ import { Brand } from "./Brand";
 import { PromotionOrderMapping } from "./PromotionOrderMapping";
 import { PromotionProductMapping } from "./PromotionProductMapping";
 
-@Index("FK_Promotion_Id", ["id"], { unique: true })
-@Entity("Promotion", { schema: "dbo" })
+@Index("idx_promotion_brand_id", ["brandId"], {})
+@Index("fk_promotion_id", ["id"], { unique: true })
+@Entity("promotion", { schema: "public" })
 export class Promotion {
-  @Column("uniqueidentifier", { primary: true, name: "Id" })
+  @Column("uuid", { primary: true, name: "id" })
   id: string;
 
-  @Column("nvarchar", { name: "Name", length: 50 })
+  @Column("character varying", { name: "name", length: 50 })
   name: string;
 
-  @Column("varchar", { name: "Code", length: 20 })
+  @Column("character varying", { name: "code", length: 20 })
   code: string;
 
-  @Column("nvarchar", { name: "Description", nullable: true })
+  @Column("text", { name: "description", nullable: true })
   description: string | null;
 
-  @Column("varchar", { name: "Type", length: 20 })
+  @Column("character varying", { name: "type", length: 20 })
   type: string;
 
-  @Column("float", { name: "MaxDiscount", nullable: true, precision: 53 })
+  @Column("double precision", {
+    name: "max_discount",
+    nullable: true,
+  })
   maxDiscount: number | null;
 
-  @Column("float", {
-    name: "MinConditionAmount",
+  @Column("double precision", {
+    name: "min_condition_amount",
     nullable: true,
-    precision: 53,
+
   })
   minConditionAmount: number | null;
 
-  @Column("float", { name: "DiscountAmount", nullable: true, precision: 53 })
+  @Column("double precision", {
+    name: "discount_amount",
+    nullable: true,
+
+  })
   discountAmount: number | null;
 
-  @Column("float", { name: "DiscountPercent", nullable: true, precision: 53 })
+  @Column("double precision", {
+    name: "discount_percent",
+    nullable: true,
+
+  })
   discountPercent: number | null;
 
-  @Column("varchar", { name: "Status", nullable: true, length: 20 })
+  @Column("character varying", { name: "status", nullable: true, length: 20 })
   status: string | null;
 
-  @Column("int", { name: "StartTime", nullable: true })
+  @Column("uuid", { name: "brand_id" })
+  brandId: string;
+
+  @Column("integer", { name: "start_time", nullable: true })
   startTime: number | null;
 
-  @Column("int", { name: "EndTime", nullable: true })
+  @Column("integer", { name: "end_time", nullable: true })
   endTime: number | null;
 
-  @Column("int", { name: "DayFilter", nullable: true })
+  @Column("integer", { name: "day_filter", nullable: true })
   dayFilter: number | null;
 
   @ManyToOne(() => Brand, (brand) => brand.promotions)
-  @JoinColumn([{ name: "BrandId", referencedColumnName: "id" }])
+  @JoinColumn([{ name: "brand_id", referencedColumnName: "id" }])
   brand: Brand;
 
   @OneToMany(

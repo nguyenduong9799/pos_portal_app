@@ -1,15 +1,13 @@
 [
   {
     "name": "default",
-    "type": "mssql",
-    "host": "54.252.135.198",
-    "port": 1433,
-    "username": "sa",
+    "type": "postgres",
+    "host": "103.90.227.139",
+    "port": 5432,
+    "username": "postgres",
     "password": "zaQ@1234",
     "database": "",
     "synchronize": false,
-    "entities": [
-      "entities/*.js"
-    ]
+    "entities": ["entities/*.js"]
   }
 ]

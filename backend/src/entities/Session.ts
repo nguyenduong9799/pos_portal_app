@@ -9,45 +9,53 @@ import {
 import { Order } from "./Order";
 import { Store } from "./Store";
 
-@Index("PK_Session_Id", ["id"], { unique: true })
-@Entity("Session", { schema: "dbo" })
+@Index("pk_session_id", ["id"], { unique: true })
+@Entity("session", { schema: "public" })
 export class Session {
-  @Column("uniqueidentifier", { primary: true, name: "Id" })
+  @Column("uuid", { primary: true, name: "id" })
   id: string;
 
-  @Column("datetime2", { name: "StartDateTime" })
+  @Column("timestamp without time zone", { name: "start_date_time" })
   startDateTime: Date;
 
-  @Column("datetime2", { name: "EndDateTime" })
+  @Column("timestamp without time zone", { name: "end_date_time" })
   endDateTime: Date;
 
-  @Column("int", { name: "NumberOfOrders" })
+  @Column("integer", { name: "number_of_orders" })
   numberOfOrders: number;
 
-  @Column("float", { name: "TotalAmount", nullable: true, precision: 53 })
+  @Column("double precision", {
+    name: "total_amount",
+    nullable: true,
+  })
   totalAmount: number | null;
 
-  @Column("int", { name: "TotalPromotion", nullable: true })
+  @Column("integer", { name: "total_promotion", nullable: true })
   totalPromotion: number | null;
 
-  @Column("float", { name: "TotalChangeCash", nullable: true, precision: 53 })
+  @Column("double precision", {
+    name: "total_change_cash",
+    nullable: true,
+  })
   totalChangeCash: number | null;
 
-  @Column("float", {
-    name: "TotalDiscountAmount",
+  @Column("double precision", {
+    name: "total_discount_amount",
     nullable: true,
-    precision: 53,
   })
   totalDiscountAmount: number | null;
 
-  @Column("float", { name: "TotalFinalAmount", nullable: true, precision: 53 })
+  @Column("double precision", {
+    name: "total_final_amount",
+    nullable: true,
+  })
   totalFinalAmount: number | null;
 
-  @Column("nvarchar", {
-    name: "Name",
+  @Column("character varying", {
+    name: "name",
     nullable: true,
     length: 50,
-    default: () => "NULL",
+    default: () => "NULL::character varying",
   })
   name: string | null;
 
@@ -55,6 +63,6 @@ export class Session {
   orders: Order[];
 
   @ManyToOne(() => Store, (store) => store.sessions)
-  @JoinColumn([{ name: "StoreId", referencedColumnName: "id" }])
+  @JoinColumn([{ name: "store_id", referencedColumnName: "id" }])
   store: Store;
 }

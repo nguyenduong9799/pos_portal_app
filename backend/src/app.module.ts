@@ -1,4 +1,4 @@
-import { Module, Session } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
@@ -6,7 +6,6 @@ import { AppService } from './app.service';
 import { ProductsModule } from './modules/products/products.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { BrandsModule } from './modules/brands/brands.module';
-import { Collection, Transaction } from 'typeorm';
 import {
   Account,
   BlogPost,
@@ -14,11 +13,9 @@ import {
   BrandAccount,
   BrandPartner,
   BrandPaymentMapping,
-  Categories,
   Category,
+  Collection,
   CollectionProduct,
-  Customers,
-  EfMigrationsHistory,
   ExtraCategory,
   GroupProduct,
   Menu,
@@ -27,23 +24,20 @@ import {
   Order,
   OrderDetail,
   OrderHistory,
-  OrderItems,
   OrderUser,
-  Orders,
   Payment,
   PaymentType,
-  Payments,
   Product,
   ProductInGroup,
-  Products,
   Promotion,
   PromotionOrderMapping,
   PromotionProductMapping,
   Role,
+  Session,
   Store,
   StoreAccount,
+  Transaction,
   User,
-  Users,
   Variant,
   VariantOptions,
   VariantProductMapping,
@@ -115,11 +109,11 @@ import {
         //   };
         // }
 
-        // Production SQL Server configuration
+        // Production PostgreSQL configuration
         return {
-          type: 'mssql',
+          type: 'postgres',
           host: configService.get<string>('DB_HOST'),
-          port: parseInt(configService.get<string>('DB_PORT') || '1433'),
+          port: parseInt(configService.get<string>('DB_PORT') || '5432'),
           username: configService.get<string>('DB_USERNAME'),
           password: configService.get<string>('DB_PASSWORD'),
           database: configService.get<string>('DB_DATABASE'),
@@ -130,12 +124,9 @@ import {
             BrandAccount,
             BrandPartner,
             BrandPaymentMapping,
-            Categories,
             Category,
             Collection,
             CollectionProduct,
-            Customers,
-            EfMigrationsHistory,
             ExtraCategory,
             GroupProduct,
             Menu,
@@ -144,15 +135,13 @@ import {
             Order,
             OrderDetail,
             OrderHistory,
-            OrderItems,
             OrderUser,
-            Orders,
+            Order,
             Payment,
             PaymentType,
-            Payments,
+            Payment,
             Product,
             ProductInGroup,
-            Products,
             Promotion,
             PromotionOrderMapping,
             PromotionProductMapping,
@@ -162,12 +151,12 @@ import {
             StoreAccount,
             Transaction,
             User,
-            Users,
+            User,
             Variant,
             VariantOptions,
             VariantProductMapping,
           ],
-          synchronize: configService.get<string>('NODE_ENV') === 'development',
+          synchronize: false, // Disabled to prevent index conflicts
           logging: true,
           options: {
             encrypt: false,
@@ -184,4 +173,4 @@ import {
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

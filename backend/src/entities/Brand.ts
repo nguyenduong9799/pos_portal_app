@@ -11,43 +11,53 @@ import { Store } from './Store';
 import { Transaction } from './Transaction';
 import { User } from './User';
 
-@Index('PK_Brand_Id', ['id'], { unique: true })
-@Entity('Brand', { schema: 'dbo' })
+@Index('pk_brand_id', ['id'], { unique: true })
+@Entity('brand', { schema: 'public' })
 export class Brand {
-  @Column('uniqueidentifier', { primary: true, name: 'Id' })
+  @Column('uuid', { primary: true, name: 'id' })
   id: string;
 
-  @Column('nvarchar', { name: 'Name', length: 50 })
+  @Column('character varying', { name: 'name', length: 50 })
   name: string;
 
-  @Column('nvarchar', { name: 'Email', nullable: true, length: 254 })
+  @Column('character varying', { name: 'email', nullable: true, length: 254 })
   email: string | null;
 
-  @Column('nvarchar', { name: 'Address', nullable: true, length: 256 })
+  @Column('character varying', { name: 'address', nullable: true, length: 256 })
   address: string | null;
 
-  @Column('varchar', { name: 'Phone', nullable: true, length: 20 })
+  @Column('character varying', { name: 'phone', nullable: true, length: 20 })
   phone: string | null;
 
-  @Column('varchar', { name: 'PicUrl', nullable: true })
+  @Column('text', { name: 'pic_url', nullable: true })
   picUrl: string | null;
 
-  @Column('nvarchar', { name: 'Status', length: 20 })
+  @Column('character varying', { name: 'status', length: 20 })
   status: string;
 
-  @Column('varchar', { name: 'BrandCode', nullable: true, length: 50 })
+  @Column('character varying', {
+    name: 'brand_code',
+    nullable: true,
+    length: 50,
+  })
   brandCode: string | null;
 
-  @Column('float', { name: 'BrandBalance', nullable: true, precision: 53 })
+  @Column('double precision', {
+    name: 'brand_balance',
+    nullable: true,
+  })
   brandBalance: number | null;
+
+  @Column('character varying', { name: 'pic_rl', nullable: true, length: 256 })
+  picRl: string | null;
 
   @OneToMany(() => BrandAccount, (brandAccount) => brandAccount.brand)
   brandAccounts: BrandAccount[];
 
-  @OneToMany(() => BrandPartner, (brandPartner) => brandPartner.masterBrand)
+  @OneToMany(() => BrandPartner, (brandPartner) => brandPartner.brandPartner)
   brandPartners: BrandPartner[];
 
-  @OneToMany(() => BrandPartner, (brandPartner) => brandPartner.brandPartner)
+  @OneToMany(() => BrandPartner, (brandPartner) => brandPartner.masterBrand)
   brandPartners2: BrandPartner[];
 
   @OneToMany(

@@ -9,29 +9,37 @@ import {
 import { Brand } from "./Brand";
 import { CollectionProduct } from "./CollectionProduct";
 
-@Index("PK_Collection_Id", ["id"], { unique: true })
-@Entity("Collection", { schema: "dbo" })
+@Index("idx_collection_brand_id", ["brandId"], {})
+@Index("pk_collection_id", ["id"], { unique: true })
+@Entity("collection", { schema: "public" })
 export class Collection {
-  @Column("uniqueidentifier", { primary: true, name: "Id" })
+  @Column("uuid", { primary: true, name: "id" })
   id: string;
 
-  @Column("nvarchar", { name: "Name", length: 50 })
+  @Column("character varying", { name: "name", length: 50 })
   name: string;
 
-  @Column("nvarchar", { name: "Code", length: 20 })
+  @Column("character varying", { name: "code", length: 20 })
   code: string;
 
-  @Column("nvarchar", { name: "Status", length: 20 })
+  @Column("character varying", { name: "status", length: 20 })
   status: string;
 
-  @Column("nvarchar", { name: "Description", nullable: true, length: 100 })
+  @Column("character varying", {
+    name: "description",
+    nullable: true,
+    length: 100,
+  })
   description: string | null;
 
-  @Column("nvarchar", { name: "PicUrl", nullable: true })
+  @Column("text", { name: "pic_url", nullable: true })
   picUrl: string | null;
 
+  @Column("uuid", { name: "brand_id" })
+  brandId: string;
+
   @ManyToOne(() => Brand, (brand) => brand.collections)
-  @JoinColumn([{ name: "BrandId", referencedColumnName: "id" }])
+  @JoinColumn([{ name: "brand_id", referencedColumnName: "id" }])
   brand: Brand;
 
   @OneToMany(

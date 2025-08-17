@@ -1,49 +1,61 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
 import { Brand } from "./Brand";
 
-@Index("PK_Transaction", ["id"], { unique: true })
-@Entity("Transaction", { schema: "dbo" })
+@Index("idx_transaction_brand_id", ["brandId"], {})
+@Index("pk_transaction", ["id"], { unique: true })
+@Entity("transaction", { schema: "public" })
 export class Transaction {
-  @Column("uniqueidentifier", { primary: true, name: "Id" })
+  @Column("uuid", { primary: true, name: "id" })
   id: string;
 
-  @Column("nvarchar", { name: "TransactionJson", nullable: true })
+  @Column("text", { name: "transaction_json", nullable: true })
   transactionJson: string | null;
 
-  @Column("datetime", { name: "CreatedDate" })
+  @Column("timestamp without time zone", { name: "created_date" })
   createdDate: Date;
 
-  @Column("uniqueidentifier", { name: "OrderId", nullable: true })
+  @Column("uuid", { name: "order_id", nullable: true })
   orderId: string | null;
 
-  @Column("uniqueidentifier", { name: "UserId", nullable: true })
+  @Column("uuid", { name: "user_id", nullable: true })
   userId: string | null;
 
-  @Column("varchar", { name: "Status", length: 10 })
+  @Column("character varying", { name: "status", length: 10 })
   status: string;
 
-  @Column("decimal", { name: "Amount", precision: 18, scale: 0 })
-  amount: number;
+  @Column("uuid", { name: "brand_id" })
+  brandId: string;
 
-  @Column("nvarchar", { name: "Currency", length: 20 })
+  @Column("numeric", { name: "amount", precision: 18, scale: 0 })
+  amount: string;
+
+  @Column("character varying", { name: "currency", length: 20 })
   currency: string;
 
-  @Column("uniqueidentifier", { name: "BrandPartnerId", nullable: true })
+  @Column("uuid", { name: "brand_partner_id", nullable: true })
   brandPartnerId: string | null;
 
-  @Column("bit", { name: "IsIncrease", nullable: true })
+  @Column("boolean", { name: "is_increase", nullable: true })
   isIncrease: boolean | null;
 
-  @Column("nvarchar", { name: "Type", nullable: true, length: 50 })
+  @Column("character varying", { name: "type", nullable: true, length: 50 })
   type: string | null;
 
-  @Column("varchar", { name: "PaymentType", nullable: true, length: 20 })
+  @Column("character varying", {
+    name: "payment_type",
+    nullable: true,
+    length: 20,
+  })
   paymentType: string | null;
 
-  @Column("nvarchar", { name: "Description", nullable: true, length: 100 })
+  @Column("character varying", {
+    name: "description",
+    nullable: true,
+    length: 100,
+  })
   description: string | null;
 
   @ManyToOne(() => Brand, (brand) => brand.transactions)
-  @JoinColumn([{ name: "BrandId", referencedColumnName: "id" }])
+  @JoinColumn([{ name: "brand_id", referencedColumnName: "id" }])
   brand: Brand;
 }

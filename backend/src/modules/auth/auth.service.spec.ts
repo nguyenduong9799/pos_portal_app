@@ -39,7 +39,9 @@ describe('AuthService', () => {
     }).compile();
 
     service = module.get<AuthService>(AuthService);
-    accountRepository = module.get<Repository<Account>>(getRepositoryToken(Account));
+    accountRepository = module.get<Repository<Account>>(
+      getRepositoryToken(Account),
+    );
     jwtService = module.get<JwtService>(JwtService);
   });
 

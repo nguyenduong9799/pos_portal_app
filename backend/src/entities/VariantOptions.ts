@@ -1,14 +1,14 @@
 import { Column, Entity, Index } from "typeorm";
 
-@Index("PK_VariantOption", ["id"], { unique: true })
-@Entity("VariantOptions", { schema: "dbo" })
+@Index("pk_variant_option", ["id"], { unique: true })
+@Entity("variant_options", { schema: "public" })
 export class VariantOptions {
-  @Column("uniqueidentifier", { primary: true, name: "Id" })
+  @Column("uuid", { primary: true, name: "id" })
   id: string;
 
-  @Column("nvarchar", { name: "OptionName", length: 200 })
+  @Column("character varying", { name: "option_name", length: 200 })
   optionName: string;
 
-  @Column("uniqueidentifier", { name: "VariantId" })
+  @Column("uuid", { name: "variant_id" })
   variantId: string;
 }

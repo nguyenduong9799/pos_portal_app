@@ -1,40 +1,39 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
-import { Product } from "./Product";
 import { GroupProduct } from "./GroupProduct";
+import { Product } from "./Product";
 
-@Index("PK__ProductI__3214EC07549E2029", ["id"], { unique: true })
-@Entity("ProductInGroup", { schema: "dbo" })
+@Index("pk__product_i__3214ec07549e2029", ["id"], { unique: true })
+@Entity("product_in_group", { schema: "public" })
 export class ProductInGroup {
-  @Column("uniqueidentifier", { primary: true, name: "Id" })
+  @Column("uuid", { primary: true, name: "id" })
   id: string;
 
-  @Column("int", { name: "Priority", default: () => "(0)" })
+  @Column("integer", { name: "priority", default: () => "0" })
   priority: number;
 
-  @Column("float", {
-    name: "AdditionalPrice",
-    precision: 53,
-    default: () => "(0)",
+  @Column("double precision", {
+    name: "additional_price",
+    default: () => "0",
   })
   additionalPrice: number;
 
-  @Column("int", { name: "Min", default: () => "(0)" })
+  @Column("integer", { name: "min", default: () => "0" })
   min: number;
 
-  @Column("int", { name: "Max", default: () => "(0)" })
+  @Column("integer", { name: "max", default: () => "0" })
   max: number;
 
-  @Column("int", { name: "Quantity", default: () => "(0)" })
+  @Column("integer", { name: "quantity", default: () => "0" })
   quantity: number;
 
-  @Column("nvarchar", { name: "Status", length: 20 })
+  @Column("character varying", { name: "status", length: 20 })
   status: string;
 
-  @ManyToOne(() => Product, (product) => product.productInGroups)
-  @JoinColumn([{ name: "ProductId", referencedColumnName: "id" }])
-  product: Product;
-
   @ManyToOne(() => GroupProduct, (groupProduct) => groupProduct.productInGroups)
-  @JoinColumn([{ name: "GroupProductId", referencedColumnName: "id" }])
+  @JoinColumn([{ name: "group_product_id", referencedColumnName: "id" }])
   groupProduct: GroupProduct;
+
+  @ManyToOne(() => Product, (product) => product.productInGroups)
+  @JoinColumn([{ name: "product_id", referencedColumnName: "id" }])
+  product: Product;
 }

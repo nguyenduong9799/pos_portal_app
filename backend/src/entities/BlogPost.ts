@@ -1,35 +1,35 @@
-import { Column, Entity, Index } from 'typeorm';
+import { Column, Entity, Index } from "typeorm";
 
-@Index('PK_BlogPost', ['id'], { unique: true })
-@Entity('BlogPost', { schema: 'dbo' })
+@Index("pk_blog_post", ["id"], { unique: true })
+@Entity("blog_post", { schema: "public" })
 export class BlogPost {
-  @Column('uniqueidentifier', { primary: true, name: 'Id' })
+  @Column("uuid", { primary: true, name: "id" })
   id: string;
 
-  @Column('nvarchar', { name: 'Title', length: 150 })
+  @Column("character varying", { name: "title", length: 150 })
   title: string;
 
-  @Column('nvarchar', { name: 'BlogContent', nullable: true })
+  @Column("text", { name: "blog_content", nullable: true })
   blogContent: string | null;
 
-  @Column('uniqueidentifier', { name: 'BrandId', nullable: true })
+  @Column("uuid", { name: "brand_id", nullable: true })
   brandId: string | null;
 
-  @Column('nvarchar', { name: 'Image', nullable: true })
+  @Column("text", { name: "image", nullable: true })
   image: string | null;
 
-  @Column('bit', { name: 'IsDialog', nullable: true })
+  @Column("boolean", { name: "is_dialog", nullable: true })
   isDialog: boolean | null;
 
-  @Column('nvarchar', { name: 'MetaData', nullable: true })
+  @Column("text", { name: "meta_data", nullable: true })
   metaData: string | null;
 
-  @Column('varchar', { name: 'Status', length: 50 })
+  @Column("character varying", { name: "status", length: 50 })
   status: string;
 
-  @Column('smallint', { name: 'Priority' })
+  @Column("smallint", { name: "priority" })
   priority: number;
 
-  @Column('varchar', { name: 'Type', nullable: true, length: 20 })
+  @Column("character varying", { name: "type", nullable: true, length: 20 })
   type: string | null;
 }

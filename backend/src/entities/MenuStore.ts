@@ -2,17 +2,17 @@ import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
 import { Menu } from "./Menu";
 import { Store } from "./Store";
 
-@Index("PK_MenuStore", ["id"], { unique: true })
-@Entity("MenuStore", { schema: "dbo" })
+@Index("pk_menu_store", ["id"], { unique: true })
+@Entity("menu_store", { schema: "public" })
 export class MenuStore {
-  @Column("uniqueidentifier", { primary: true, name: "Id" })
+  @Column("uuid", { primary: true, name: "id" })
   id: string;
 
   @ManyToOne(() => Menu, (menu) => menu.menuStores)
-  @JoinColumn([{ name: "MenuId", referencedColumnName: "id" }])
+  @JoinColumn([{ name: "menu_id", referencedColumnName: "id" }])
   menu: Menu;
 
   @ManyToOne(() => Store, (store) => store.menuStores)
-  @JoinColumn([{ name: "StoreId", referencedColumnName: "id" }])
+  @JoinColumn([{ name: "store_id", referencedColumnName: "id" }])
   store: Store;
 }

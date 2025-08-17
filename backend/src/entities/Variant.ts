@@ -1,25 +1,25 @@
 import { Column, Entity, Index, OneToMany } from "typeorm";
 import { VariantProductMapping } from "./VariantProductMapping";
 
-@Index("PK_Variant", ["id"], { unique: true })
-@Entity("Variant", { schema: "dbo" })
+@Index("pk_variant", ["id"], { unique: true })
+@Entity("variant", { schema: "public" })
 export class Variant {
-  @Column("uniqueidentifier", { primary: true, name: "Id" })
+  @Column("uuid", { primary: true, name: "id" })
   id: string;
 
-  @Column("nvarchar", { name: "Name", length: 50 })
+  @Column("character varying", { name: "name", length: 50 })
   name: string;
 
-  @Column("nvarchar", { name: "Status", length: 50 })
+  @Column("character varying", { name: "status", length: 50 })
   status: string;
 
-  @Column("uniqueidentifier", { name: "BrandId" })
+  @Column("uuid", { name: "brand_id" })
   brandId: string;
 
-  @Column("nvarchar", { name: "Value", nullable: true })
+  @Column("text", { name: "value", nullable: true })
   value: string | null;
 
-  @Column("int", { name: "DisplayOrder", nullable: true })
+  @Column("integer", { name: "display_order", nullable: true })
   displayOrder: number | null;
 
   @OneToMany(

@@ -10,45 +10,57 @@ import { Brand } from "./Brand";
 import { MenuProduct } from "./MenuProduct";
 import { MenuStore } from "./MenuStore";
 
-@Index("PK_Menu_Id", ["id"], { unique: true })
-@Index("UX_Menu_Code", ["code"], { unique: true })
-@Entity("Menu", { schema: "dbo" })
+@Index("idx_menu_brand_id", ["brandId"], {})
+@Index("ux_menu_code", ["code"], { unique: true })
+@Index("pk_menu_id", ["id"], { unique: true })
+@Entity("menu", { schema: "public" })
 export class Menu {
-  @Column("uniqueidentifier", { primary: true, name: "Id" })
+  @Column("uuid", { primary: true, name: "id" })
   id: string;
 
-  @Column("nvarchar", { name: "Code", unique: true, length: 20 })
+  @Column("character varying", { name: "code", unique: true, length: 20 })
   code: string;
 
-  @Column("nvarchar", { name: "CreatedBy", nullable: true, length: 50 })
+  @Column("character varying", {
+    name: "created_by",
+    nullable: true,
+    length: 50,
+  })
   createdBy: string | null;
 
-  @Column("datetime2", { name: "CreatedAt", nullable: true })
+  @Column("timestamp without time zone", { name: "created_at", nullable: true })
   createdAt: Date | null;
 
-  @Column("nvarchar", { name: "UpdatedBy", nullable: true, length: 50 })
+  @Column("character varying", {
+    name: "updated_by",
+    nullable: true,
+    length: 50,
+  })
   updatedBy: string | null;
 
-  @Column("datetime2", { name: "UpdatedAt", nullable: true })
+  @Column("timestamp without time zone", { name: "updated_at", nullable: true })
   updatedAt: Date | null;
 
-  @Column("int", { name: "Priority" })
+  @Column("integer", { name: "priority" })
   priority: number;
 
-  @Column("int", { name: "DateFilter" })
+  @Column("integer", { name: "date_filter" })
   dateFilter: number;
 
-  @Column("int", { name: "StartTime" })
+  @Column("integer", { name: "start_time" })
   startTime: number;
 
-  @Column("int", { name: "EndTime" })
+  @Column("integer", { name: "end_time" })
   endTime: number;
 
-  @Column("nvarchar", { name: "Status", length: 20 })
+  @Column("character varying", { name: "status", length: 20 })
   status: string;
 
+  @Column("uuid", { name: "brand_id" })
+  brandId: string;
+
   @ManyToOne(() => Brand, (brand) => brand.menus)
-  @JoinColumn([{ name: "BrandId", referencedColumnName: "id" }])
+  @JoinColumn([{ name: "brand_id", referencedColumnName: "id" }])
   brand: Brand;
 
   @OneToMany(() => MenuProduct, (menuProduct) => menuProduct.menu)

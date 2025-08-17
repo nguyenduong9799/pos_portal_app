@@ -2,20 +2,20 @@ import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
 import { Collection } from "./Collection";
 import { Product } from "./Product";
 
-@Index("PK_CollectionProduct_Id", ["id"], { unique: true })
-@Entity("CollectionProduct", { schema: "dbo" })
+@Index("pk_collection_product_id", ["id"], { unique: true })
+@Entity("collection_product", { schema: "public" })
 export class CollectionProduct {
-  @Column("uniqueidentifier", { primary: true, name: "Id" })
+  @Column("uuid", { primary: true, name: "id" })
   id: string;
 
-  @Column("nvarchar", { name: "Status", length: 20 })
+  @Column("character varying", { name: "status", length: 20 })
   status: string;
 
   @ManyToOne(() => Collection, (collection) => collection.collectionProducts)
-  @JoinColumn([{ name: "CollectionId", referencedColumnName: "id" }])
+  @JoinColumn([{ name: "collection_id", referencedColumnName: "id" }])
   collection: Collection;
 
   @ManyToOne(() => Product, (product) => product.collectionProducts)
-  @JoinColumn([{ name: "ProductId", referencedColumnName: "id" }])
+  @JoinColumn([{ name: "product_id", referencedColumnName: "id" }])
   product: Product;
 }

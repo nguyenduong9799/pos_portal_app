@@ -9,33 +9,37 @@ import {
 import { Product } from "./Product";
 import { ProductInGroup } from "./ProductInGroup";
 
-@Index("PK__GroupPro__3214EC0705D5CB61", ["id"], { unique: true })
-@Entity("GroupProduct", { schema: "dbo" })
+@Index("pk__group_pro__3214ec0705d5cb61", ["id"], { unique: true })
+@Entity("group_product", { schema: "public" })
 export class GroupProduct {
-  @Column("uniqueidentifier", { primary: true, name: "Id" })
+  @Column("uuid", { primary: true, name: "id" })
   id: string;
 
-  @Column("nvarchar", { name: "Name", length: 50, default: () => "''" })
+  @Column("character varying", {
+    name: "name",
+    length: 50,
+    default: () => "''",
+  })
   name: string;
 
-  @Column("nvarchar", {
-    name: "CombinationMode",
+  @Column("character varying", {
+    name: "combination_mode",
     length: 30,
     default: () => "''",
   })
   combinationMode: string;
 
-  @Column("int", { name: "Priority", default: () => "(0)" })
+  @Column("integer", { name: "priority", default: () => "0" })
   priority: number;
 
-  @Column("int", { name: "Quantity", default: () => "(0)" })
+  @Column("integer", { name: "quantity", default: () => "0" })
   quantity: number;
 
-  @Column("nvarchar", { name: "Status", length: 20 })
+  @Column("character varying", { name: "status", length: 20 })
   status: string;
 
   @ManyToOne(() => Product, (product) => product.groupProducts)
-  @JoinColumn([{ name: "ComboProductId", referencedColumnName: "id" }])
+  @JoinColumn([{ name: "combo_product_id", referencedColumnName: "id" }])
   comboProduct: Product;
 
   @OneToMany(

@@ -1,33 +1,44 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
-import { Promotion } from "./Promotion";
 import { Order } from "./Order";
+import { Promotion } from "./Promotion";
 
-@Index("PK_PromotionOrderMapping_Id", ["id"], { unique: true })
-@Entity("PromotionOrderMapping", { schema: "dbo" })
+@Index("pk_promotion_order_mapping_id", ["id"], { unique: true })
+@Entity("promotion_order_mapping", { schema: "public" })
 export class PromotionOrderMapping {
-  @Column("uniqueidentifier", { primary: true, name: "Id" })
+  @Column("uuid", { primary: true, name: "id" })
   id: string;
 
-  @Column("float", { name: "DiscountAmount", nullable: true, precision: 53 })
+  @Column("double precision", {
+    name: "discount_amount",
+    nullable: true,
+  })
   discountAmount: number | null;
 
-  @Column("int", { name: "Quantity", nullable: true })
+  @Column("integer", { name: "quantity", nullable: true })
   quantity: number | null;
 
-  @Column("uniqueidentifier", { name: "OrderDetailId", nullable: true })
+  @Column("uuid", { name: "order_detail_id", nullable: true })
   orderDetailId: string | null;
 
-  @Column("varchar", { name: "EffectType", nullable: true, length: 50 })
+  @Column("character varying", {
+    name: "effect_type",
+    nullable: true,
+    length: 50,
+  })
   effectType: string | null;
 
-  @Column("varchar", { name: "VoucherCode", nullable: true, length: 100 })
+  @Column("character varying", {
+    name: "voucher_code",
+    nullable: true,
+    length: 100,
+  })
   voucherCode: string | null;
 
-  @ManyToOne(() => Promotion, (promotion) => promotion.promotionOrderMappings)
-  @JoinColumn([{ name: "PromotionId", referencedColumnName: "id" }])
-  promotion: Promotion;
-
   @ManyToOne(() => Order, (order) => order.promotionOrderMappings)
-  @JoinColumn([{ name: "OrderId", referencedColumnName: "id" }])
+  @JoinColumn([{ name: "order_id", referencedColumnName: "id" }])
   order: Order;
+
+  @ManyToOne(() => Promotion, (promotion) => promotion.promotionOrderMappings)
+  @JoinColumn([{ name: "promotion_id", referencedColumnName: "id" }])
+  promotion: Promotion;
 }

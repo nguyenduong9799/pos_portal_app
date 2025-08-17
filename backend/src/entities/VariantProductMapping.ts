@@ -1,18 +1,18 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
-import { Variant } from "./Variant";
 import { Product } from "./Product";
+import { Variant } from "./Variant";
 
-@Index("PK_VariantProductMapping", ["id"], { unique: true })
-@Entity("VariantProductMapping", { schema: "dbo" })
+@Index("pk_variant_product_mapping", ["id"], { unique: true })
+@Entity("variant_product_mapping", { schema: "public" })
 export class VariantProductMapping {
-  @Column("uniqueidentifier", { primary: true, name: "Id" })
+  @Column("uuid", { primary: true, name: "id" })
   id: string;
 
-  @ManyToOne(() => Variant, (variant) => variant.variantProductMappings)
-  @JoinColumn([{ name: "VariantId", referencedColumnName: "id" }])
-  variant: Variant;
-
   @ManyToOne(() => Product, (product) => product.variantProductMappings)
-  @JoinColumn([{ name: "ProductId", referencedColumnName: "id" }])
+  @JoinColumn([{ name: "product_id", referencedColumnName: "id" }])
   product: Product;
+
+  @ManyToOne(() => Variant, (variant) => variant.variantProductMappings)
+  @JoinColumn([{ name: "variant_id", referencedColumnName: "id" }])
+  variant: Variant;
 }

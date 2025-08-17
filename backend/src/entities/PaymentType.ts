@@ -1,22 +1,22 @@
 import { Column, Entity, Index, OneToMany } from "typeorm";
 import { BrandPaymentMapping } from "./BrandPaymentMapping";
 
-@Index("PaymentType_pk", ["type"], { unique: true })
-@Entity("PaymentType", { schema: "dbo" })
+@Index("payment_type_pk", ["type"], { unique: true })
+@Entity("payment_type", { schema: "public" })
 export class PaymentType {
-  @Column("varchar", { primary: true, name: "Type", length: 20 })
+  @Column("character varying", { primary: true, name: "type", length: 20 })
   type: string;
 
-  @Column("nvarchar", { name: "Name", length: 100 })
+  @Column("character varying", { name: "name", length: 100 })
   name: string;
 
-  @Column("varchar", { name: "PicUrl" })
+  @Column("text", { name: "pic_url" })
   picUrl: string;
 
-  @Column("varchar", { name: "PaymentCode", length: 20 })
+  @Column("character varying", { name: "payment_code", length: 20 })
   paymentCode: string;
 
-  @Column("varchar", { name: "Status", length: 20 })
+  @Column("character varying", { name: "status", length: 20 })
   status: string;
 
   @OneToMany(

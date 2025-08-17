@@ -1,32 +1,40 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
 import { Brand } from "./Brand";
 
-@Index("BrandPartner_pk", ["id"], { unique: true })
-@Entity("BrandPartner", { schema: "dbo" })
+@Index("idx_brand_partner_brand_partner_id", ["brandPartnerId"], {})
+@Index("uq_brand_partner_id", ["id"], { unique: true })
+@Index("idx_brand_partner_master_brand_id", ["masterBrandId"], {})
+@Entity("brand_partner", { schema: "public" })
 export class BrandPartner {
-  @Column("uniqueidentifier", { primary: true, name: "Id" })
+  @Column("uuid", { primary: true, name: "id" })
   id: string;
 
-  @Column("float", { name: "DebtBalance", precision: 53 })
+  @Column("uuid", { name: "master_brand_id" })
+  masterBrandId: string;
+
+  @Column("uuid", { name: "brand_partner_id" })
+  brandPartnerId: string;
+
+  @Column("double precision", { name: "debt_balance"})
   debtBalance: number;
 
-  @Column("datetime", { name: "CreatedAt" })
+  @Column("timestamp without time zone", { name: "created_at" })
   createdAt: Date;
 
-  @Column("datetime", { name: "UpdatedAt" })
+  @Column("timestamp without time zone", { name: "updated_at" })
   updatedAt: Date;
 
-  @Column("varchar", { name: "Status", length: 20 })
+  @Column("character varying", { name: "status", length: 20 })
   status: string;
 
-  @Column("varchar", { name: "Type", length: 20 })
+  @Column("character varying", { name: "type", length: 20 })
   type: string;
 
   @ManyToOne(() => Brand, (brand) => brand.brandPartners)
-  @JoinColumn([{ name: "MasterBrandId", referencedColumnName: "id" }])
-  masterBrand: Brand;
+  @JoinColumn([{ name: "brand_partner_id", referencedColumnName: "id" }])
+  brandPartner: Brand;
 
   @ManyToOne(() => Brand, (brand) => brand.brandPartners2)
-  @JoinColumn([{ name: "BrandPartnerId", referencedColumnName: "id" }])
-  brandPartner: Brand;
+  @JoinColumn([{ name: "master_brand_id", referencedColumnName: "id" }])
+  masterBrand: Brand;
 }

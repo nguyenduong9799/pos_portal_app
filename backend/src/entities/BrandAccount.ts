@@ -9,21 +9,25 @@ import {
 import { Account } from "./Account";
 import { Brand } from "./Brand";
 
-@Index("PK_BrandAccount_Id", ["id"], { unique: true })
-@Index("UX_BrandAccount_Account", ["accountId"], { unique: true })
-@Entity("BrandAccount", { schema: "dbo" })
+@Index("ux_brand_account_account", ["accountId"], { unique: true })
+@Index("idx_brand_account_brand_id", ["brandId"], {})
+@Index("pk_brand_account_id", ["id"], { unique: true })
+@Entity("brand_account", { schema: "public" })
 export class BrandAccount {
-  @Column("uniqueidentifier", { primary: true, name: "Id" })
+  @Column("uuid", { primary: true, name: "id" })
   id: string;
 
-  @Column("uniqueidentifier", { name: "AccountId", unique: true })
+  @Column("uuid", { name: "brand_id" })
+  brandId: string;
+
+  @Column("uuid", { name: "account_id", unique: true })
   accountId: string;
 
   @OneToOne(() => Account, (account) => account.brandAccount)
-  @JoinColumn([{ name: "AccountId", referencedColumnName: "id" }])
+  @JoinColumn([{ name: "account_id", referencedColumnName: "id" }])
   account: Account;
 
   @ManyToOne(() => Brand, (brand) => brand.brandAccounts)
-  @JoinColumn([{ name: "BrandId", referencedColumnName: "id" }])
+  @JoinColumn([{ name: "brand_id", referencedColumnName: "id" }])
   brand: Brand;
 }

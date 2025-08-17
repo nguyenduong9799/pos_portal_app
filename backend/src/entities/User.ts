@@ -1,46 +1,58 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
 import { Brand } from "./Brand";
 
-@Index("User_pk", ["id"], { unique: true })
-@Entity("User", { schema: "dbo" })
+@Index("idx_user_brand_id", ["brandId"], {})
+@Index("user_pk", ["id"], { unique: true })
+@Entity("user", { schema: "public" })
 export class User {
-  @Column("uniqueidentifier", { primary: true, name: "Id" })
+  @Column("uuid", { primary: true, name: "id" })
   id: string;
 
-  @Column("varchar", { name: "PhoneNumber", length: 20 })
+  @Column("character varying", { name: "phone_number", length: 20 })
   phoneNumber: string;
 
-  @Column("nvarchar", { name: "FullName", nullable: true, length: 50 })
+  @Column("character varying", {
+    name: "full_name",
+    nullable: true,
+    length: 50,
+  })
   fullName: string | null;
 
-  @Column("varchar", { name: "Gender", nullable: true, length: 10 })
+  @Column("character varying", { name: "gender", nullable: true, length: 10 })
   gender: string | null;
 
-  @Column("varchar", { name: "Email", nullable: true, length: 100 })
+  @Column("character varying", { name: "email", nullable: true, length: 100 })
   email: string | null;
 
-  @Column("varchar", { name: "Status", length: 10 })
+  @Column("character varying", { name: "status", length: 10 })
   status: string;
 
-  @Column("varchar", { name: "FireBaseUID", length: 50 })
+  @Column("character varying", { name: "fire_base_uid", length: 50 })
   fireBaseUid: string;
 
-  @Column("varchar", { name: "FCMToken", nullable: true })
+  @Column("text", { name: "fcm_token", nullable: true })
   fcmToken: string | null;
 
-  @Column("datetime", { name: "CreatedAt", nullable: true })
+  @Column("uuid", { name: "brand_id" })
+  brandId: string;
+
+  @Column("timestamp without time zone", { name: "created_at", nullable: true })
   createdAt: Date | null;
 
-  @Column("datetime", { name: "UpdatedAt", nullable: true })
+  @Column("timestamp without time zone", { name: "updated_at", nullable: true })
   updatedAt: Date | null;
 
-  @Column("varchar", { name: "UrlImg", nullable: true })
+  @Column("text", { name: "url_img", nullable: true })
   urlImg: string | null;
 
-  @Column("varchar", { name: "PinCode", nullable: true, length: 100 })
+  @Column("character varying", {
+    name: "pin_code",
+    nullable: true,
+    length: 100,
+  })
   pinCode: string | null;
 
   @ManyToOne(() => Brand, (brand) => brand.users)
-  @JoinColumn([{ name: "BrandId", referencedColumnName: "id" }])
+  @JoinColumn([{ name: "brand_id", referencedColumnName: "id" }])
   brand: Brand;
 }

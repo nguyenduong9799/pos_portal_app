@@ -5,76 +5,95 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
-} from "typeorm";
-import { Account } from "./Account";
-import { OrderUser } from "./OrderUser";
-import { Session } from "./Session";
-import { OrderDetail } from "./OrderDetail";
-import { OrderHistory } from "./OrderHistory";
-import { PromotionOrderMapping } from "./PromotionOrderMapping";
+} from 'typeorm';
+import { Account } from './Account';
+import { OrderUser } from './OrderUser';
+import { Session } from './Session';
+import { OrderDetail } from './OrderDetail';
+import { OrderHistory } from './OrderHistory';
+import { PromotionOrderMapping } from './PromotionOrderMapping';
 
-@Index("PK_OrderID", ["id"], { unique: true })
-@Index("UQ_Order_InvoiceID", ["invoiceId"], { unique: true })
-@Entity("Order", { schema: "dbo" })
+@Index('pk_order_id', ['id'], { unique: true })
+@Index('uq_order_invoice_id', ['invoiceId'], { unique: true })
+@Index('idx_order_session_id', ['sessionId'], {})
+@Entity('order', { schema: 'public' })
 export class Order {
-  @Column("uniqueidentifier", { primary: true, name: "Id" })
+  @Column('uuid', { primary: true, name: 'id' })
   id: string;
 
-  @Column("datetime2", { name: "CheckInDate" })
+  @Column('timestamp without time zone', { name: 'check_in_date' })
   checkInDate: Date;
 
-  @Column("datetime2", { name: "CheckOutDate" })
+  @Column('timestamp without time zone', { name: 'check_out_date' })
   checkOutDate: Date;
 
-  @Column("nvarchar", { name: "InvoiceID", unique: true, length: 50 })
+  @Column('character varying', { name: 'invoice_id', unique: true, length: 50 })
   invoiceId: string;
 
-  @Column("float", { name: "TotalAmount", precision: 53 })
+  @Column('double precision', { name: 'total_amount' })
   totalAmount: number;
 
-  @Column("float", { name: "Discount", precision: 53 })
+  @Column('double precision', { name: 'discount' })
   discount: number;
 
-  @Column("float", { name: "FinalAmount", precision: 53 })
+  @Column('double precision', { name: 'final_amount' })
   finalAmount: number;
 
-  @Column("float", { name: "VAT", precision: 53 })
+  @Column('double precision', { name: 'vat' })
   vat: number;
 
-  @Column("float", { name: "VATAmount", precision: 53 })
+  @Column('double precision', { name: 'vat_amount' })
   vatAmount: number;
 
-  @Column("nvarchar", { name: "OrderType", nullable: true, length: 20 })
+  @Column('character varying', {
+    name: 'order_type',
+    nullable: true,
+    length: 20,
+  })
   orderType: string | null;
 
-  @Column("int", { name: "NumberOfGuest", nullable: true })
+  @Column('integer', { name: 'number_of_guest', nullable: true })
   numberOfGuest: number | null;
 
-  @Column("nvarchar", { name: "Status", length: 20 })
+  @Column('character varying', { name: 'status', length: 20 })
   status: string;
 
-  @Column("nvarchar", { name: "Note", nullable: true })
+  @Column('text', { name: 'note', nullable: true })
   note: string | null;
 
-  @Column("float", { name: "FeeAmount", nullable: true, precision: 53 })
+  @Column('double precision', {
+    name: 'fee_amount',
+    nullable: true,
+  })
   feeAmount: number | null;
 
-  @Column("nvarchar", { name: "FeeDescription", nullable: true, length: 50 })
+  @Column('character varying', {
+    name: 'fee_description',
+    nullable: true,
+    length: 50,
+  })
   feeDescription: string | null;
 
-  @Column("varchar", { name: "PaymentType", nullable: true, length: 50 })
+  @Column('uuid', { name: 'session_id' })
+  sessionId: string;
+
+  @Column('character varying', {
+    name: 'payment_type',
+    nullable: true,
+    length: 50,
+  })
   paymentType: string | null;
 
   @ManyToOne(() => Account, (account) => account.orders)
-  @JoinColumn([{ name: "CheckInPerson", referencedColumnName: "id" }])
+  @JoinColumn([{ name: 'check_in_person', referencedColumnName: 'id' }])
   checkInPerson: Account;
 
   @ManyToOne(() => OrderUser, (orderUser) => orderUser.orders)
-  @JoinColumn([{ name: "OrderSourceId", referencedColumnName: "id" }])
+  @JoinColumn([{ name: 'order_source_id', referencedColumnName: 'id' }])
   orderSource: OrderUser;
 
   @ManyToOne(() => Session, (session) => session.orders)
-  @JoinColumn([{ name: "SessionId", referencedColumnName: "id" }])
+  @JoinColumn([{ name: 'session_id', referencedColumnName: 'id' }])
   session: Session;
 
   @OneToMany(() => OrderDetail, (orderDetail) => orderDetail.order)
@@ -85,7 +104,7 @@ export class Order {
 
   @OneToMany(
     () => PromotionOrderMapping,
-    (promotionOrderMapping) => promotionOrderMapping.order
+    (promotionOrderMapping) => promotionOrderMapping.order,
   )
   promotionOrderMappings: PromotionOrderMapping[];
 }

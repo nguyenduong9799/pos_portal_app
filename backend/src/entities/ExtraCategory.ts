@@ -1,23 +1,23 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
 import { Category } from "./Category";
 
-@Index("PK_ExtraCategory_Id", ["id"], { unique: true })
-@Entity("ExtraCategory", { schema: "dbo" })
+@Index("pk_extra_category_id", ["id"], { unique: true })
+@Entity("extra_category", { schema: "public" })
 export class ExtraCategory {
-  @Column("uniqueidentifier", { primary: true, name: "Id" })
+  @Column("uuid", { primary: true, name: "id" })
   id: string;
 
-  @Column("nvarchar", { name: "Status", length: 20 })
+  @Column("character varying", { name: "status", length: 20 })
   status: string;
 
-  @Column("varchar", { name: "Type", nullable: true, length: 20 })
+  @Column("character varying", { name: "type", nullable: true, length: 20 })
   type: string | null;
 
   @ManyToOne(() => Category, (category) => category.extraCategories)
-  @JoinColumn([{ name: "ExtraCategoryId", referencedColumnName: "id" }])
+  @JoinColumn([{ name: "extra_category_id", referencedColumnName: "id" }])
   extraCategory: Category;
 
   @ManyToOne(() => Category, (category) => category.extraCategories2)
-  @JoinColumn([{ name: "ProductCategoryId", referencedColumnName: "id" }])
+  @JoinColumn([{ name: "product_category_id", referencedColumnName: "id" }])
   productCategory: Category;
 }

@@ -5,47 +5,55 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
-} from "typeorm";
-import { Menu } from "./Menu";
-import { Product } from "./Product";
-import { OrderDetail } from "./OrderDetail";
+} from 'typeorm';
+import { Menu } from './Menu';
+import { Product } from './Product';
+import { OrderDetail } from './OrderDetail';
 
-@Index("Pk_MenuProdudct_Id", ["id"], { unique: true })
-@Entity("MenuProduct", { schema: "dbo" })
+@Index('pk_menu_product_id', ['id'], { unique: true })
+@Entity('menu_product', { schema: 'public' })
 export class MenuProduct {
-  @Column("uniqueidentifier", { primary: true, name: "Id" })
+  @Column('uuid', { primary: true, name: 'id' })
   id: string;
 
-  @Column("nvarchar", { name: "Status", length: 20 })
+  @Column('character varying', { name: 'status', length: 20 })
   status: string;
 
-  @Column("float", { name: "SellingPrice", precision: 53 })
+  @Column('double precision', { name: 'selling_price' })
   sellingPrice: number;
 
-  @Column("float", { name: "DiscountPrice", precision: 53 })
+  @Column('double precision', { name: 'discount_price'})
   discountPrice: number;
 
-  @Column("float", { name: "HistoricalPrice", precision: 53 })
+  @Column('double precision', { name: 'historical_price' })
   historicalPrice: number;
 
-  @Column("nvarchar", { name: "CreatedBy", nullable: true, length: 50 })
+  @Column('character varying', {
+    name: 'created_by',
+    nullable: true,
+    length: 50,
+  })
   createdBy: string | null;
 
-  @Column("datetime2", { name: "CreatedAt", nullable: true })
+  @Column('timestamp without time zone', { name: 'created_at', nullable: true })
   createdAt: Date | null;
 
-  @Column("nvarchar", { name: "UpdatedBy", nullable: true, length: 50 })
+  @Column('character varying', {
+    name: 'updated_by',
+    nullable: true,
+    length: 50,
+  })
   updatedBy: string | null;
 
-  @Column("datetime2", { name: "UpdatedAt", nullable: true })
+  @Column('timestamp without time zone', { name: 'updated_at', nullable: true })
   updatedAt: Date | null;
 
   @ManyToOne(() => Menu, (menu) => menu.menuProducts)
-  @JoinColumn([{ name: "MenuId", referencedColumnName: "id" }])
+  @JoinColumn([{ name: 'menu_id', referencedColumnName: 'id' }])
   menu: Menu;
 
   @ManyToOne(() => Product, (product) => product.menuProducts)
-  @JoinColumn([{ name: "ProductId", referencedColumnName: "id" }])
+  @JoinColumn([{ name: 'product_id', referencedColumnName: 'id' }])
   product: Product;
 
   @OneToMany(() => OrderDetail, (orderDetail) => orderDetail.menuProduct)

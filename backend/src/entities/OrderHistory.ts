@@ -1,28 +1,32 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
 import { Order } from "./Order";
 
-@Index("OrderHistory_pk_id", ["id"], { unique: true })
-@Entity("OrderHistory", { schema: "dbo" })
+@Index("order_history_pk_id", ["id"], { unique: true })
+@Index("idx_order_history_order_id", ["orderId"], {})
+@Entity("order_history", { schema: "public" })
 export class OrderHistory {
-  @Column("uniqueidentifier", { primary: true, name: "Id" })
+  @Column("uuid", { primary: true, name: "id" })
   id: string;
 
-  @Column("datetime", { name: "CreatedTime" })
+  @Column("uuid", { name: "order_id" })
+  orderId: string;
+
+  @Column("timestamp without time zone", { name: "created_time" })
   createdTime: Date;
 
-  @Column("varchar", { name: "FromStatus", length: 20 })
+  @Column("character varying", { name: "from_status", length: 20 })
   fromStatus: string;
 
-  @Column("varchar", { name: "ToStatus", length: 20 })
+  @Column("character varying", { name: "to_status", length: 20 })
   toStatus: string;
 
-  @Column("uniqueidentifier", { name: "ChangedBy", nullable: true })
+  @Column("uuid", { name: "changed_by", nullable: true })
   changedBy: string | null;
 
-  @Column("nvarchar", { name: "Note", nullable: true, length: 500 })
+  @Column("character varying", { name: "note", nullable: true, length: 500 })
   note: string | null;
 
   @ManyToOne(() => Order, (order) => order.orderHistories)
-  @JoinColumn([{ name: "OrderId", referencedColumnName: "id" }])
+  @JoinColumn([{ name: "order_id", referencedColumnName: "id" }])
   order: Order;
 }

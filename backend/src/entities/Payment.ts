@@ -1,32 +1,32 @@
-import { Column, Entity, Index } from "typeorm";
+import { Column, Entity, Index } from 'typeorm';
 
-@Index("PK_Payment", ["id"], { unique: true })
-@Entity("Payment", { schema: "dbo" })
+@Index('pk_payment', ['id'], { unique: true })
+@Entity('payment', { schema: 'public' })
 export class Payment {
-  @Column("uniqueidentifier", { primary: true, name: "Id" })
+  @Column('uuid', { primary: true, name: 'id' })
   id: string;
 
-  @Column("uniqueidentifier", { name: "OrderId" })
+  @Column('uuid', { name: 'order_id' })
   orderId: string;
 
-  @Column("float", { name: "Amount", precision: 53 })
+  @Column('double precision', { name: 'amount'})
   amount: number;
 
-  @Column("char", { name: "CurrencyCode", nullable: true, length: 10 })
+  @Column('character', { name: 'currency_code', nullable: true, length: 10 })
   currencyCode: string | null;
 
-  @Column("nvarchar", { name: "Notes", nullable: true, length: 250 })
+  @Column('character varying', { name: 'notes', nullable: true, length: 250 })
   notes: string | null;
 
-  @Column("datetime", { name: "PayTime", nullable: true })
+  @Column('timestamp without time zone', { name: 'pay_time', nullable: true })
   payTime: Date | null;
 
-  @Column("varchar", { name: "Status", length: 10 })
+  @Column('character varying', { name: 'status', length: 10 })
   status: string;
 
-  @Column("varchar", { name: "Type", length: 10 })
+  @Column('character varying', { name: 'type', length: 10 })
   type: string;
 
-  @Column("uniqueidentifier", { name: "SourceId", nullable: true })
+  @Column('uuid', { name: 'source_id', nullable: true })
   sourceId: string | null;
 }
