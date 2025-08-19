@@ -24,6 +24,7 @@ import {
   ForgotPasswordDto,
   ResetPasswordDto,
   RefreshTokenDto,
+  LoginResponseDto,
 } from './dto';
 
 @ApiTags('Authentication')
@@ -33,7 +34,11 @@ export class AuthController {
 
   @Post('login')
   @ApiOperation({ summary: 'User login' })
-  @ApiResponse({ status: 200, description: 'Login successful' })
+  @ApiResponse({
+    status: 200,
+    description: 'Login successful',
+    type: LoginResponseDto,
+  })
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
   @ApiBody({ type: LoginDto })
   async login(@Body() loginDto: LoginDto) {
@@ -119,7 +124,10 @@ export class AccountsController {
   @ApiOperation({ summary: 'Get user profile' })
   @ApiBearerAuth()
   @ApiParam({ name: 'id', description: 'User ID' })
-  @ApiResponse({ status: 200, description: 'User profile retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'User profile retrieved successfully',
+  })
   @ApiResponse({ status: 404, description: 'User not found' })
   async getUserProfile(@Param('id') id: string) {
     return this.authService.getProfile(id);

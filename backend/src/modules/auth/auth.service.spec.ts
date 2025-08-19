@@ -55,10 +55,11 @@ describe('AuthService', () => {
 
   describe('validateUser', () => {
     it('should return user data without password when credentials are valid', async () => {
+      const hashedPassword = await bcrypt.hash('password', 10);
       const mockAccount = {
         id: '1',
         username: 'testuser',
-        password: await bcrypt.hash('password', 10),
+        password: hashedPassword,
         name: 'Test User',
         status: 'Active',
         role: { name: 'employee' },

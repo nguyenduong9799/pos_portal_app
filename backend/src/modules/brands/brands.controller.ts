@@ -28,8 +28,16 @@ export class BrandsController {
 
   @Get()
   @ApiOperation({ summary: 'Get all brands or filter by status' })
-  @ApiQuery({ name: 'status', required: false, description: 'Filter brands by status' })
-  @ApiResponse({ status: 200, description: 'Brands retrieved successfully', type: [BrandResponseDto] })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    description: 'Filter brands by status',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Brands retrieved successfully',
+    type: [BrandResponseDto],
+  })
   async findAll(@Query('status') status?: string): Promise<BrandResponseDto[]> {
     if (status) {
       return this.brandsService.findByStatus(status);
@@ -40,7 +48,11 @@ export class BrandsController {
   @Get('code/:brandCode')
   @ApiOperation({ summary: 'Get brand by brand code' })
   @ApiParam({ name: 'brandCode', description: 'Brand code' })
-  @ApiResponse({ status: 200, description: 'Brand retrieved successfully', type: BrandResponseDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Brand retrieved successfully',
+    type: BrandResponseDto,
+  })
   @ApiResponse({ status: 404, description: 'Brand not found' })
   async findByBrandCode(
     @Param('brandCode') brandCode: string,
@@ -51,7 +63,11 @@ export class BrandsController {
   @Get(':id')
   @ApiOperation({ summary: 'Get brand by ID' })
   @ApiParam({ name: 'id', description: 'Brand ID' })
-  @ApiResponse({ status: 200, description: 'Brand retrieved successfully', type: BrandResponseDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Brand retrieved successfully',
+    type: BrandResponseDto,
+  })
   @ApiResponse({ status: 404, description: 'Brand not found' })
   async findOne(@Param('id') id: string): Promise<BrandResponseDto> {
     return this.brandsService.findOne(id);
@@ -61,7 +77,11 @@ export class BrandsController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create a new brand' })
   @ApiBody({ type: CreateBrandDto })
-  @ApiResponse({ status: 201, description: 'Brand created successfully', type: BrandResponseDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Brand created successfully',
+    type: BrandResponseDto,
+  })
   @ApiResponse({ status: 400, description: 'Invalid brand data' })
   async create(@Body() brandData: CreateBrandDto): Promise<BrandResponseDto> {
     return this.brandsService.create(brandData);
@@ -71,7 +91,11 @@ export class BrandsController {
   @ApiOperation({ summary: 'Update brand by ID' })
   @ApiParam({ name: 'id', description: 'Brand ID' })
   @ApiBody({ type: UpdateBrandDto })
-  @ApiResponse({ status: 200, description: 'Brand updated successfully', type: BrandResponseDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Brand updated successfully',
+    type: BrandResponseDto,
+  })
   @ApiResponse({ status: 404, description: 'Brand not found' })
   async update(
     @Param('id') id: string,

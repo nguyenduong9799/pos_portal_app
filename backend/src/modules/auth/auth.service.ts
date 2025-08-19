@@ -7,7 +7,6 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import * as bcrypt from 'bcryptjs';
 import { Account } from '../../entities';
 import {
   LoginDto,
@@ -16,6 +15,7 @@ import {
   UserResponseDto,
   ChangePasswordDto,
 } from './dto';
+import { PasswordUtil } from './utils/password.util';
 
 @Injectable()
 export class AuthService {
@@ -32,6 +32,7 @@ export class AuthService {
       where: { username },
       relations: ['role'],
     });
+    console.log(user);
 
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
@@ -41,8 +42,10 @@ export class AuthService {
       throw new UnauthorizedException('Account is not active');
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-
+    const isPasswordValid = PasswordUtil.comparePassword(
+      password,
+      user.password,
+    );
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -73,7 +76,7 @@ export class AuthService {
       throw new ConflictException('Username already exists');
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = PasswordUtil.hashPassword(password);
 
     const account = this.accountRepository.create({
       username,
@@ -168,7 +171,7 @@ export class AuthService {
       throw new NotFoundException('User not found');
     }
 
-    const isCurrentPasswordValid = await bcrypt.compare(
+    const isCurrentPasswordValid = PasswordUtil.comparePassword(
       currentPassword,
       user.password,
     );
@@ -177,7 +180,7 @@ export class AuthService {
       throw new UnauthorizedException('Current password is incorrect');
     }
 
-    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+    const hashedNewPassword = PasswordUtil.hashPassword(newPassword);
 
     await this.accountRepository.update(userId, {
       password: hashedNewPassword,
@@ -200,7 +203,7 @@ export class AuthService {
       relations: ['role'],
     });
 
-    if (user && (await bcrypt.compare(password, user.password))) {
+    if (user && PasswordUtil.comparePassword(password, user.password)) {
       // Exclude password from the result
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...result } = user;

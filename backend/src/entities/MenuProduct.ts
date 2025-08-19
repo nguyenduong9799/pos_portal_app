@@ -22,7 +22,7 @@ export class MenuProduct {
   @Column('double precision', { name: 'selling_price' })
   sellingPrice: number;
 
-  @Column('double precision', { name: 'discount_price'})
+  @Column('double precision', { name: 'discount_price' })
   discountPrice: number;
 
   @Column('double precision', { name: 'historical_price' })

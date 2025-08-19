@@ -6,73 +6,73 @@ import {
   ManyToMany,
   ManyToOne,
   OneToMany,
-} from "typeorm";
-import { Category } from "./Category";
-import { MenuStore } from "./MenuStore";
-import { Session } from "./Session";
-import { Brand } from "./Brand";
-import { StoreAccount } from "./StoreAccount";
+} from 'typeorm';
+import { Category } from './Category';
+import { MenuStore } from './MenuStore';
+import { Session } from './Session';
+import { Brand } from './Brand';
+import { StoreAccount } from './StoreAccount';
 
-@Index("idx_store_brand_id", ["brandId"], {})
-@Index("ux_store_store_code", ["code"], { unique: true })
-@Index("pk_store_id", ["id"], { unique: true })
-@Entity("store", { schema: "public" })
+@Index('idx_store_brand_id', ['brandId'], {})
+@Index('ux_store_store_code', ['code'], { unique: true })
+@Index('pk_store_id', ['id'], { unique: true })
+@Entity('store', { schema: 'public' })
 export class Store {
-  @Column("uuid", { primary: true, name: "id" })
+  @Column('uuid', { primary: true, name: 'id' })
   id: string;
 
-  @Column("character varying", { name: "name", length: 50 })
+  @Column('character varying', { name: 'name', length: 50 })
   name: string;
 
-  @Column("character varying", { name: "short_name", length: 30 })
+  @Column('character varying', { name: 'short_name', length: 30 })
   shortName: string;
 
-  @Column("character varying", { name: "email", length: 254 })
+  @Column('character varying', { name: 'email', length: 254 })
   email: string;
 
-  @Column("character varying", { name: "phone", length: 20 })
+  @Column('character varying', { name: 'phone', length: 20 })
   phone: string;
 
-  @Column("character varying", { name: "code", length: 20 })
+  @Column('character varying', { name: 'code', length: 20 })
   code: string;
 
-  @Column("character varying", { name: "status", length: 20 })
+  @Column('character varying', { name: 'status', length: 20 })
   status: string;
 
-  @Column("uuid", { name: "brand_id" })
+  @Column('uuid', { name: 'brand_id' })
   brandId: string;
 
-  @Column("character varying", { name: "address", nullable: true, length: 256 })
+  @Column('character varying', { name: 'address', nullable: true, length: 256 })
   address: string | null;
 
-  @Column("character varying", {
-    name: "wifi_name",
+  @Column('character varying', {
+    name: 'wifi_name',
     nullable: true,
     length: 100,
   })
   wifiName: string | null;
 
-  @Column("character varying", {
-    name: "wifi_password",
+  @Column('character varying', {
+    name: 'wifi_password',
     nullable: true,
     length: 50,
   })
   wifiPassword: string | null;
 
-  @Column("character varying", { name: "lat", nullable: true, length: 256 })
+  @Column('character varying', { name: 'lat', nullable: true, length: 256 })
   lat: string | null;
 
-  @Column("character varying", { name: "long", nullable: true, length: 256 })
+  @Column('character varying', { name: 'long', nullable: true, length: 256 })
   long: string | null;
 
-  @Column("integer", { name: "index", nullable: true })
+  @Column('integer', { name: 'index', nullable: true })
   index: number | null;
 
-  @Column("text", { name: "location_nearby", nullable: true })
+  @Column('text', { name: 'location_nearby', nullable: true })
   locationNearby: string | null;
 
-  @Column("character varying", {
-    name: "local_pass_code",
+  @Column('character varying', {
+    name: 'local_pass_code',
     nullable: true,
     length: 200,
   })
@@ -88,7 +88,7 @@ export class Store {
   sessions: Session[];
 
   @ManyToOne(() => Brand, (brand) => brand.stores)
-  @JoinColumn([{ name: "brand_id", referencedColumnName: "id" }])
+  @JoinColumn([{ name: 'brand_id', referencedColumnName: 'id' }])
   brand: Brand;
 
   @OneToMany(() => StoreAccount, (storeAccount) => storeAccount.store)

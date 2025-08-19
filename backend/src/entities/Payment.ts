@@ -9,7 +9,7 @@ export class Payment {
   @Column('uuid', { name: 'order_id' })
   orderId: string;
 
-  @Column('double precision', { name: 'amount'})
+  @Column('double precision', { name: 'amount' })
   amount: number;
 
   @Column('character', { name: 'currency_code', nullable: true, length: 10 })

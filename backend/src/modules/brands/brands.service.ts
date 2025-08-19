@@ -16,7 +16,7 @@ export class BrandsService {
       relations: ['brandAccounts', 'stores', 'products'],
     });
 
-    return brands.map(brand => this.mapToResponseDto(brand));
+    return brands.map((brand) => this.mapToResponseDto(brand));
   }
 
   async findOne(id: string): Promise<BrandResponseDto> {
@@ -35,13 +35,16 @@ export class BrandsService {
   async create(brandData: CreateBrandDto): Promise<BrandResponseDto> {
     const brand = this.brandRepository.create(brandData);
     const savedBrand = await this.brandRepository.save(brand);
-    
+
     return this.findOne(savedBrand.id);
   }
 
-  async update(id: string, brandData: UpdateBrandDto): Promise<BrandResponseDto> {
+  async update(
+    id: string,
+    brandData: UpdateBrandDto,
+  ): Promise<BrandResponseDto> {
     const brand = await this.brandRepository.findOne({ where: { id } });
-    
+
     if (!brand) {
       throw new NotFoundException(`Brand with ID ${id} not found`);
     }
@@ -52,7 +55,7 @@ export class BrandsService {
 
   async remove(id: string): Promise<void> {
     const brand = await this.brandRepository.findOne({ where: { id } });
-    
+
     if (!brand) {
       throw new NotFoundException(`Brand with ID ${id} not found`);
     }
@@ -66,7 +69,7 @@ export class BrandsService {
       relations: ['brandAccounts', 'stores', 'products'],
     });
 
-    return brands.map(brand => this.mapToResponseDto(brand));
+    return brands.map((brand) => this.mapToResponseDto(brand));
   }
 
   async findByBrandCode(brandCode: string): Promise<BrandResponseDto | null> {
