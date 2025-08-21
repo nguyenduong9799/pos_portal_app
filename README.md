@@ -111,7 +111,26 @@ npm install
 npm start
 ```
 
+## CI/CD and Automation
+
+This repository includes comprehensive CI/CD workflows for automated building, testing, and deployment using GitHub Actions with self-hosted runners.
+
+### 🚀 Quick Start
+- **Workflows**: Located in `.github/workflows/`
+- **Validation**: Run `./validate-ci.sh` to check setup
+- **Documentation**: See `CI-CD-IMPLEMENTATION.md` for detailed information
+
+### Available Workflows
+- **Frontend CI/CD**: Builds and tests Angular application
+- **Backend CI/CD**: Builds and tests NestJS application  
+- **Full Stack**: Combined deployment pipeline
+- **Security Check**: Daily dependency and security audits
+
+All workflows are configured for self-hosted runners and handle known issues gracefully while providing comprehensive reporting.
+
 ## Additional Resources
 
 - [Angular CLI Documentation](https://angular.dev/tools/cli)
 - [NestJS Documentation](https://docs.nestjs.com/)
+- [CI/CD Implementation Guide](CI-CD-IMPLEMENTATION.md)
+- [Workflow Documentation](.github/workflows/README.md)

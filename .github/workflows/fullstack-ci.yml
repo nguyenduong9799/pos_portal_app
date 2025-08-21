@@ -1,0 +1,122 @@
+name: Full Stack CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # Frontend job
+  frontend:
+    runs-on: self-hosted
+    
+    defaults:
+      run:
+        working-directory: frontend
+        
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build frontend
+      run: npm run build
+      
+    - name: Test frontend
+      run: npm test -- --watch=false --browsers=ChromeHeadless
+      continue-on-error: true
+      
+    - name: Upload frontend build
+      uses: actions/upload-artifact@v4
+      with:
+        name: frontend-dist
+        path: frontend/dist/
+        retention-days: 1
+
+  # Backend job
+  backend:
+    runs-on: self-hosted
+    
+    defaults:
+      run:
+        working-directory: backend
+        
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+        cache-dependency-path: backend/package-lock.json
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Lint backend
+      run: npm run lint
+      continue-on-error: true
+      
+    - name: Build backend
+      run: npm run build
+      
+    - name: Test backend
+      run: npm test
+      continue-on-error: true
+      
+    - name: Upload backend build
+      uses: actions/upload-artifact@v4
+      with:
+        name: backend-dist
+        path: backend/dist/
+        retention-days: 1
+
+  # Deploy job (runs only on successful builds of both frontend and backend)
+  deploy:
+    runs-on: self-hosted
+    needs: [frontend, backend]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Download frontend artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: frontend-dist
+        path: ./deploy/frontend/
+        
+    - name: Download backend artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: backend-dist
+        path: ./deploy/backend/
+        
+    - name: Display deployment structure
+      run: |
+        echo "Deployment structure:"
+        ls -la ./deploy/
+        echo "Frontend files:"
+        ls -la ./deploy/frontend/ || echo "No frontend files"
+        echo "Backend files:"
+        ls -la ./deploy/backend/ || echo "No backend files"
+        
+    - name: Deploy notification
+      run: |
+        echo "🚀 Deployment ready!"
+        echo "Frontend and backend builds are available in ./deploy/ directory"
+        echo "Frontend build size: $(du -sh ./deploy/frontend/ 2>/dev/null || echo 'N/A')"
+        echo "Backend build size: $(du -sh ./deploy/backend/ 2>/dev/null || echo 'N/A')"

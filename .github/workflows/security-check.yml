@@ -1,0 +1,106 @@
+name: Security and Dependency Check
+
+on:
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:  # Allow manual triggering
+  pull_request:
+    branches: [ main ]
+    paths:
+      - '**/package.json'
+      - '**/package-lock.json'
+
+jobs:
+  security-audit:
+    runs-on: self-hosted
+    
+    strategy:
+      matrix:
+        app: [frontend, backend]
+    
+    defaults:
+      run:
+        working-directory: ${{ matrix.app }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+        cache-dependency-path: ${{ matrix.app }}/package-lock.json
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run security audit
+      run: |
+        echo "🔍 Running security audit for ${{ matrix.app }}..."
+        npm audit --audit-level=moderate || true
+        
+    - name: Check for outdated packages
+      run: |
+        echo "📦 Checking for outdated packages in ${{ matrix.app }}..."
+        npm outdated || true
+        
+    - name: Generate dependency report
+      run: |
+        echo "📋 Generating dependency report for ${{ matrix.app }}..."
+        echo "## ${{ matrix.app }} Dependencies" > dependency-report.md
+        echo "Generated on: $(date)" >> dependency-report.md
+        echo "" >> dependency-report.md
+        echo "### Package Count" >> dependency-report.md
+        echo "- Production: $(npm list --depth=0 --prod --silent 2>/dev/null | wc -l || echo 'N/A')" >> dependency-report.md
+        echo "- Development: $(npm list --depth=0 --dev --silent 2>/dev/null | wc -l || echo 'N/A')" >> dependency-report.md
+        echo "" >> dependency-report.md
+        echo "### Audit Summary" >> dependency-report.md
+        npm audit --audit-level=info --json 2>/dev/null | jq -r '.metadata | "- Vulnerabilities: \(.vulnerabilities.total // 0)\n- Dependencies: \(.totalDependencies // 0)"' >> dependency-report.md 2>/dev/null || echo "- Audit data unavailable" >> dependency-report.md
+        
+    - name: Upload dependency report
+      uses: actions/upload-artifact@v4
+      with:
+        name: dependency-report-${{ matrix.app }}
+        path: ${{ matrix.app }}/dependency-report.md
+        retention-days: 30
+
+  license-check:
+    runs-on: self-hosted
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        
+    - name: Install license checker
+      run: npm install -g license-checker
+      
+    - name: Check frontend licenses
+      run: |
+        cd frontend
+        npm ci
+        echo "🔍 Frontend License Check:" > ../license-report.txt
+        license-checker --summary >> ../license-report.txt 2>/dev/null || echo "License check failed for frontend" >> ../license-report.txt
+        
+    - name: Check backend licenses
+      run: |
+        cd backend
+        npm ci
+        echo "" >> ../license-report.txt
+        echo "🔍 Backend License Check:" >> ../license-report.txt
+        license-checker --summary >> ../license-report.txt 2>/dev/null || echo "License check failed for backend" >> ../license-report.txt
+        
+    - name: Upload license report
+      uses: actions/upload-artifact@v4
+      with:
+        name: license-report
+        path: license-report.txt
+        retention-days: 30

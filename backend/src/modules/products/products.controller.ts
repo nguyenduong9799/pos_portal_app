@@ -28,8 +28,20 @@ export class ProductsController {
 
   @Get()
   @ApiOperation({ summary: 'Get all products with pagination' })
-  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number (1-based)', example: 1 })
-  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Number of items per page', example: 10 })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    description: 'Page number (1-based)',
+    example: 1,
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    description: 'Number of items per page',
+    example: 10,
+  })
   @ApiResponse({
     status: 200,
     description: 'Products retrieved successfully',
@@ -54,7 +66,9 @@ export class ProductsController {
       },
     },
   })
-  async findAll(@Query() paginationQuery: PaginationQueryDto): Promise<PaginatedResponseDto<Product>> {
+  async findAll(
+    @Query() paginationQuery: PaginationQueryDto,
+  ): Promise<PaginatedResponseDto<Product>> {
     return this.productsService.findAll(paginationQuery);
   }
 

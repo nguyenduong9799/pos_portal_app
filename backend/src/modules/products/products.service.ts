@@ -3,7 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Product } from '../../entities';
 import { CreateProductDto, UpdateProductDto } from './dto';
-import { PaginationQueryDto, PaginatedResponseDto, PaginationMetaDto } from '../../common/dto';
+import {
+  PaginationQueryDto,
+  PaginatedResponseDto,
+  PaginationMetaDto,
+} from '../../common/dto';
 
 @Injectable()
 export class ProductsService {
@@ -12,7 +16,9 @@ export class ProductsService {
     private readonly productRepository: Repository<Product>,
   ) {}
 
-  async findAll(paginationQuery?: PaginationQueryDto): Promise<PaginatedResponseDto<Product>> {
+  async findAll(
+    paginationQuery?: PaginationQueryDto,
+  ): Promise<PaginatedResponseDto<Product>> {
     const page = paginationQuery?.page || 1;
     const limit = paginationQuery?.limit || 10;
     const skip = (page - 1) * limit;

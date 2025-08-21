@@ -27,7 +27,7 @@ describe('BrandsService', () => {
     picUrl: 'https://example.com/logo.png',
     status: 'Active',
     brandCode: 'TB001',
-    brandBalance: 10000.50,
+    brandBalance: 10000.5,
     brandAccounts: [],
     stores: [],
     products: [],
@@ -94,7 +94,13 @@ describe('BrandsService', () => {
       expect(result.name).toBe(mockBrand.name);
       expect(mockBrandRepository.findOne).toHaveBeenCalledWith({
         where: { id: mockBrand.id },
-        relations: ['brandAccounts', 'stores', 'products', 'categories', 'menus'],
+        relations: [
+          'brandAccounts',
+          'stores',
+          'products',
+          'categories',
+          'menus',
+        ],
       });
     });
 
@@ -137,7 +143,10 @@ describe('BrandsService', () => {
       const result = await service.update(mockBrand.id, updateBrandDto);
 
       expect(result.id).toBe(mockBrand.id);
-      expect(mockBrandRepository.update).toHaveBeenCalledWith(mockBrand.id, updateBrandDto);
+      expect(mockBrandRepository.update).toHaveBeenCalledWith(
+        mockBrand.id,
+        updateBrandDto,
+      );
     });
 
     it('should throw NotFoundException when brand not found for update', async () => {
