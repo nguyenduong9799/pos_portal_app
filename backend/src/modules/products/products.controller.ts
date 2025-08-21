@@ -6,6 +6,7 @@ import {
   Delete,
   Body,
   Param,
+  Query,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -13,10 +14,12 @@ import {
   ApiResponse,
   ApiBody,
   ApiParam,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { ProductsService } from './products.service';
 import { Product } from '../../entities';
 import { CreateProductDto, UpdateProductDto } from './dto';
+import { PaginationQueryDto, PaginatedResponseDto } from '../../common/dto';
 
 @ApiTags('Products')
 @Controller('products')
@@ -24,14 +27,35 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get all products' })
+  @ApiOperation({ summary: 'Get all products with pagination' })
+  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number (1-based)', example: 1 })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Number of items per page', example: 10 })
   @ApiResponse({
     status: 200,
     description: 'Products retrieved successfully',
-    type: [Product],
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'array',
+          items: { $ref: '#/components/schemas/Product' },
+        },
+        meta: {
+          type: 'object',
+          properties: {
+            page: { type: 'number', example: 1 },
+            limit: { type: 'number', example: 10 },
+            total: { type: 'number', example: 100 },
+            totalPages: { type: 'number', example: 10 },
+            hasNextPage: { type: 'boolean', example: true },
+            hasPreviousPage: { type: 'boolean', example: false },
+          },
+        },
+      },
+    },
   })
-  async findAll(): Promise<Product[]> {
-    return this.productsService.findAll();
+  async findAll(@Query() paginationQuery: PaginationQueryDto): Promise<PaginatedResponseDto<Product>> {
+    return this.productsService.findAll(paginationQuery);
   }
 
   @Get(':id')

@@ -2,7 +2,7 @@ import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ProductService } from '../../services/product.service';
-import { Product, CreateProductDto, UpdateProductDto } from '../../models/product.model';
+import { Product, CreateProductDto, UpdateProductDto, PaginationMeta } from '../../models/product.model';
 
 @Component({
   selector: 'app-products',
@@ -18,6 +18,19 @@ export class ProductsComponent implements OnInit {
   showModal = signal(false);
   editingProduct = signal<Product | null>(null);
   productForm: FormGroup;
+
+  // Pagination state
+  currentPage = signal(1);
+  pageSize = signal(10);
+  totalItems = signal(0);
+  totalPages = signal(0);
+  paginationMeta = signal<PaginationMeta | null>(null);
+
+  // Page size options
+  pageSizeOptions = [5, 10, 20, 50];
+
+  // Make Math available in template
+  Math = Math;
 
   constructor(
     private productService: ProductService,
@@ -44,9 +57,17 @@ export class ProductsComponent implements OnInit {
     this.isLoading.set(true);
     this.error.set(null);
     
-    this.productService.getAllProducts().subscribe({
-      next: (products) => {
-        this.products.set(products);
+    const paginationQuery = {
+      page: this.currentPage(),
+      limit: this.pageSize()
+    };
+
+    this.productService.getProducts(paginationQuery).subscribe({
+      next: (response) => {
+        this.products.set(response.data);
+        this.paginationMeta.set(response.meta);
+        this.totalItems.set(response.meta.total);
+        this.totalPages.set(response.meta.totalPages);
         this.isLoading.set(false);
       },
       error: (error) => {
@@ -98,10 +119,10 @@ export class ProductsComponent implements OnInit {
     
     this.productService.createProduct(productData).subscribe({
       next: (product) => {
-        const currentProducts = this.products();
-        this.products.set([...currentProducts, product]);
         this.closeModal();
         this.isLoading.set(false);
+        // Reload current page to reflect changes
+        this.loadProducts();
       },
       error: (error) => {
         this.error.set(error.message || 'Failed to create product');
@@ -115,15 +136,10 @@ export class ProductsComponent implements OnInit {
     
     this.productService.updateProduct(id, productData).subscribe({
       next: (updatedProduct) => {
-        const currentProducts = this.products();
-        const index = currentProducts.findIndex(p => p.id === id);
-        if (index !== -1) {
-          const newProducts = [...currentProducts];
-          newProducts[index] = updatedProduct;
-          this.products.set(newProducts);
-        }
         this.closeModal();
         this.isLoading.set(false);
+        // Reload current page to reflect changes
+        this.loadProducts();
       },
       error: (error) => {
         this.error.set(error.message || 'Failed to update product');
@@ -138,9 +154,14 @@ export class ProductsComponent implements OnInit {
       
       this.productService.deleteProduct(id).subscribe({
         next: () => {
-          const currentProducts = this.products();
-          this.products.set(currentProducts.filter(p => p.id !== id));
           this.isLoading.set(false);
+          // Check if we need to go to previous page if current page becomes empty
+          const remainingItems = this.products().length - 1;
+          if (remainingItems === 0 && this.currentPage() > 1) {
+            this.goToPage(this.currentPage() - 1);
+          } else {
+            this.loadProducts();
+          }
         },
         error: (error) => {
           this.error.set(error.message || 'Failed to delete product');
@@ -162,5 +183,57 @@ export class ProductsComponent implements OnInit {
       return 'badge-error';
     }
     return 'badge-success';
+  }
+
+  // Pagination methods
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages()) {
+      this.currentPage.set(page);
+      this.loadProducts();
+    }
+  }
+
+  nextPage() {
+    const meta = this.paginationMeta();
+    if (meta && meta.hasNextPage) {
+      this.goToPage(this.currentPage() + 1);
+    }
+  }
+
+  previousPage() {
+    const meta = this.paginationMeta();
+    if (meta && meta.hasPreviousPage) {
+      this.goToPage(this.currentPage() - 1);
+    }
+  }
+
+  changePageSize(newSize: number) {
+    this.pageSize.set(newSize);
+    this.currentPage.set(1); // Reset to first page when changing page size
+    this.loadProducts();
+  }
+
+  getPageNumbers(): number[] {
+    const total = this.totalPages();
+    const current = this.currentPage();
+    const delta = 2; // Show 2 pages on each side of current page
+    
+    let start = Math.max(1, current - delta);
+    let end = Math.min(total, current + delta);
+    
+    // Adjust if we're near the beginning or end
+    if (end - start < 2 * delta) {
+      if (start === 1) {
+        end = Math.min(total, start + 2 * delta);
+      } else {
+        start = Math.max(1, end - 2 * delta);
+      }
+    }
+    
+    const pages = [];
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+    return pages;
   }
 }
