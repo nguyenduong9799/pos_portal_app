@@ -23,7 +23,7 @@ export class AuthService {
     @InjectRepository(Account)
     private accountRepository: Repository<Account>,
     private jwtService: JwtService,
-  ) {}
+  ) { }
 
   async login(loginDto: LoginDto): Promise<LoginResponseDto> {
     const { username, password } = loginDto;

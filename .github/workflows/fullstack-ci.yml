@@ -1,10 +1,14 @@
-name: Full Stack CI/CD
+name: Full Stack CI/CD with Docker
 
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+
+env:
+  DOCKER_BUILDKIT: 1
+  COMPOSE_DOCKER_CLI_BUILD: 1
 
 jobs:
   # Frontend job
@@ -83,7 +87,7 @@ jobs:
         path: backend/dist/
         retention-days: 1
 
-  # Deploy job (runs only on successful builds of both frontend and backend)
+  # Docker build and deploy job
   deploy:
     runs-on: self-hosted
     needs: [frontend, backend]
@@ -105,18 +109,136 @@ jobs:
         name: backend-dist
         path: ./deploy/backend/
         
-    - name: Display deployment structure
+    - name: Set up Docker environment
       run: |
-        echo "Deployment structure:"
-        ls -la ./deploy/
-        echo "Frontend files:"
-        ls -la ./deploy/frontend/ || echo "No frontend files"
-        echo "Backend files:"
-        ls -la ./deploy/backend/ || echo "No backend files"
+        echo "🐳 Setting up Docker environment"
+        docker --version
+        docker-compose --version || docker compose version
+        
+    - name: Stop existing containers
+      run: |
+        echo "🛑 Stopping existing containers"
+        docker-compose down --remove-orphans || docker compose down --remove-orphans || true
+        
+    - name: Clean up old images
+      run: |
+        echo "🧹 Cleaning up old images"
+        docker image prune -f
+        # Remove old pos-portal images
+        docker images | grep pos-portal | awk '{print $3}' | xargs -r docker rmi -f || true
+        
+    - name: Build Docker images
+      run: |
+        echo "🔨 Building Docker images"
+        docker-compose build --no-cache || docker compose build --no-cache
+        
+    - name: Start services
+      run: |
+        echo "🚀 Starting services"
+        docker-compose up -d || docker compose up -d
+        
+    - name: Wait for services to be ready
+      run: |
+        echo "⏳ Waiting for services to start..."
+        sleep 45
+        
+        echo "🔍 Checking service health"
+        
+        # Check backend health
+        for i in {1..12}; do
+          if curl -f http://localhost:3000/health 2>/dev/null; then
+            echo "✅ Backend is healthy"
+            backend_ready=true
+            break
+          else
+            echo "⏳ Backend not ready, attempt $i/12"
+            sleep 10
+          fi
+        done
+        
+        # Check frontend
+        for i in {1..6}; do
+          if curl -f http://localhost:80 2>/dev/null; then
+            echo "✅ Frontend is accessible"
+            frontend_ready=true
+            break
+          else
+            echo "⏳ Frontend not ready, attempt $i/6"
+            sleep 5
+          fi
+        done
+        
+        # Show container logs if services aren't ready
+        if [[ ! $backend_ready ]]; then
+          echo "❌ Backend failed to start. Container logs:"
+          docker logs pos-portal-backend
+        fi
+        
+        if [[ ! $frontend_ready ]]; then
+          echo "❌ Frontend failed to start. Container logs:"
+          docker logs pos-portal-frontend
+        fi
+        
+    - name: Display deployment status
+      run: |
+        echo "� Deployment Status:"
+        echo "===================="
+        docker-compose ps || docker compose ps
+        
+        echo ""
+        echo "📋 Container Details:"
+        echo "===================="
+        docker stats --no-stream --format "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.NetIO}}\t{{.BlockIO}}"
+        
+        echo ""
+        echo "💾 Image Sizes:"
+        echo "==============="
+        docker images | grep pos-portal
+        
+        echo ""
+        echo "🌐 Service URLs:"
+        echo "==============="
+        echo "Frontend: http://localhost:80"
+        echo "Backend:  http://localhost:3000"
+        
+    - name: Run deployment tests
+      run: |
+        echo "🧪 Running deployment tests"
+        
+        # Test backend API
+        if curl -f http://localhost:3000/health 2>/dev/null; then
+          echo "✅ Backend API is responding"
+        else
+          echo "❌ Backend API test failed"
+          echo "Backend logs:"
+          docker logs pos-portal-backend --tail 50
+          exit 1
+        fi
+        
+        # Test frontend
+        if curl -f http://localhost:80 2>/dev/null; then
+          echo "✅ Frontend is serving"
+        else
+          echo "❌ Frontend test failed"
+          echo "Frontend logs:"
+          docker logs pos-portal-frontend --tail 50
+          exit 1
+        fi
+        
+        # Test container health
+        backend_health=$(docker inspect --format='{{.State.Health.Status}}' pos-portal-backend 2>/dev/null || echo "unknown")
+        frontend_health=$(docker inspect --format='{{.State.Health.Status}}' pos-portal-frontend 2>/dev/null || echo "unknown")
+        
+        echo "Backend health: $backend_health"
+        echo "Frontend health: $frontend_health"
         
     - name: Deploy notification
       run: |
-        echo "🚀 Deployment ready!"
-        echo "Frontend and backend builds are available in ./deploy/ directory"
-        echo "Frontend build size: $(du -sh ./deploy/frontend/ 2>/dev/null || echo 'N/A')"
-        echo "Backend build size: $(du -sh ./deploy/backend/ 2>/dev/null || echo 'N/A')"
+        echo "🎉 Deployment Successful!"
+        echo "========================"
+        echo "Frontend: Running on port 80"
+        echo "Backend:  Running on port 3000"
+        echo "Docker containers are healthy and running"
+        echo ""
+        echo "Container status:"
+        docker-compose ps || docker compose ps

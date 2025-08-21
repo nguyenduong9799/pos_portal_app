@@ -1,5 +1,5 @@
 export const environment = {
   production: false,
-  apiUrl: 'https://admin.reso.vn/api/v1',
+  apiUrl: 'http://localhost:3000',
   timeout: 10000
 };
