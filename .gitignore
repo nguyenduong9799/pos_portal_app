@@ -57,3 +57,11 @@ backend/*.sqlite3
 # System files
 .DS_Store
 Thumbs.db
+
+# CI/CD artifacts and deployment
+./deploy
+dependency-report.md
+license-report.txt
+/coverage
+frontend/coverage
+backend/coverage
