@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagination UI Demo - POS Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.4/dist/full.css" rel="stylesheet" type="text/css" />
+    <style>
+        body { background-color: #f3f4f6; }
+    </style>
+</head>
+<body class="p-8">
+    <div class="container mx-auto max-w-6xl">
+        <h1 class="text-3xl font-bold text-gray-800 mb-8">POS Portal - Pagination Implementation Demo</h1>
+        
+        <!-- Products Table Header -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Products Management</h2>
+                <button class="btn btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Add Product
+                </button>
+            </div>
+
+            <!-- Sample Table -->
+            <div class="overflow-x-auto">
+                <table class="table table-zebra w-full">
+                    <thead>
+                        <tr>
+                            <th>SKU</th>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>Cost</th>
+                            <th>Stock</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="font-mono">PROD001</td>
+                            <td>
+                                <div>
+                                    <div class="font-bold">Sample Product 1</div>
+                                    <div class="text-sm opacity-50">Product description</div>
+                                </div>
+                            </td>
+                            <td class="font-semibold">$19.99</td>
+                            <td>$15.99</td>
+                            <td>
+                                <div class="text-center">
+                                    <div class="font-semibold">50</div>
+                                    <div class="text-xs text-gray-500">Min: 10</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="badge badge-success">active</div>
+                            </td>
+                            <td>
+                                <div class="flex gap-2">
+                                    <button class="btn btn-sm btn-outline btn-primary">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                        </svg>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline btn-error">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <!-- Repeat for demo purposes -->
+                        <tr>
+                            <td class="font-mono">PROD002</td>
+                            <td>
+                                <div>
+                                    <div class="font-bold">Sample Product 2</div>
+                                    <div class="text-sm opacity-50">Another product description</div>
+                                </div>
+                            </td>
+                            <td class="font-semibold">$29.99</td>
+                            <td>$25.99</td>
+                            <td>
+                                <div class="text-center">
+                                    <div class="font-semibold">5</div>
+                                    <div class="text-xs text-gray-500">Min: 10</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="badge badge-success">active</div>
+                            </td>
+                            <td>
+                                <div class="flex gap-2">
+                                    <button class="btn btn-sm btn-outline btn-primary">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                        </svg>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline btn-error">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- PAGINATION CONTROLS - This is what we implemented -->
+            <div class="flex flex-col md:flex-row justify-between items-center mt-6 gap-4">
+                <!-- Items per page selector -->
+                <div class="flex items-center gap-2">
+                    <span class="text-sm text-gray-600">Items per page:</span>
+                    <select class="select select-bordered select-sm">
+                        <option value="5">5</option>
+                        <option value="10" selected>10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                    </select>
+                </div>
+
+                <!-- Pagination info -->
+                <div class="text-sm text-gray-600">
+                    Showing 1 - 10 of 156 items
+                </div>
+
+                <!-- Pagination buttons -->
+                <div class="join">
+                    <button class="join-item btn btn-sm" disabled>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                        Previous
+                    </button>
+
+                    <button class="join-item btn btn-sm btn-active">1</button>
+                    <button class="join-item btn btn-sm">2</button>
+                    <button class="join-item btn btn-sm">3</button>
+                    <button class="join-item btn btn-sm">4</button>
+                    <button class="join-item btn btn-sm">5</button>
+                    <button class="join-item btn btn-sm">...</button>
+                    <button class="join-item btn btn-sm">16</button>
+
+                    <button class="join-item btn btn-sm">
+                        Next
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Implementation Details -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Implementation Features</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h4 class="font-semibold text-gray-700 mb-2">Backend Features</h4>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li>✅ Query parameter validation (page ≥ 1, limit 1-100)</li>
+                        <li>✅ Efficient TypeORM pagination with findAndCount()</li>
+                        <li>✅ Comprehensive pagination metadata</li>
+                        <li>✅ Swagger API documentation</li>
+                        <li>✅ Unit tests for pagination logic</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-700 mb-2">Frontend Features</h4>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li>✅ Responsive pagination UI using DaisyUI</li>
+                        <li>✅ Page size selection (5, 10, 20, 50)</li>
+                        <li>✅ Smart pagination controls with proper states</li>
+                        <li>✅ Page number display for large datasets</li>
+                        <li>✅ Items count display and loading states</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <h4 class="font-semibold text-gray-700 mb-2">API Example</h4>
+                <div class="bg-gray-100 rounded p-4">
+                    <code class="text-sm">
+                        GET /products?page=2&limit=20<br>
+                        Response: { "data": [...], "meta": { "page": 2, "limit": 20, "total": 156, "totalPages": 8, "hasNextPage": true, "hasPreviousPage": true } }
+                    </code>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

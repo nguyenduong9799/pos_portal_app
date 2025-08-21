@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Product } from '../../entities';
 import { CreateProductDto, UpdateProductDto } from './dto';
+import { PaginationQueryDto, PaginatedResponseDto, PaginationMetaDto } from '../../common/dto';
 
 @Injectable()
 export class ProductsService {
@@ -11,10 +12,23 @@ export class ProductsService {
     private readonly productRepository: Repository<Product>,
   ) {}
 
-  async findAll(): Promise<Product[]> {
-    return this.productRepository.find({
+  async findAll(paginationQuery?: PaginationQueryDto): Promise<PaginatedResponseDto<Product>> {
+    const page = paginationQuery?.page || 1;
+    const limit = paginationQuery?.limit || 10;
+    const skip = (page - 1) * limit;
+
+    const [products, total] = await this.productRepository.findAndCount({
       relations: ['category', 'brand'],
+      skip,
+      take: limit,
+      order: {
+        displayOrder: 'ASC', // Order by display order
+        name: 'ASC', // Then by name
+      },
     });
+
+    const meta = new PaginationMetaDto(page, limit, total);
+    return new PaginatedResponseDto(products, meta);
   }
 
   async findOne(id: string): Promise<Product | null> {
