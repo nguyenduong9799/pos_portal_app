@@ -9,11 +9,14 @@ COPY package*.json ./
 # Install dependencies
 RUN npm ci --only=production
 
-# Copy source code
-COPY . .
-
 # Install Angular CLI globally
 RUN npm install -g @angular/cli
+
+# Explicitly install Angular DevKit if missing
+RUN npm install @angular-devkit/build-angular --save-dev
+
+# Copy source code
+COPY . .
 
 # Build the application
 RUN npm run build
