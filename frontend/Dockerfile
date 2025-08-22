@@ -12,6 +12,9 @@ RUN npm ci --only=production
 # Copy source code
 COPY . .
 
+# Install Angular CLI globally
+RUN npm install -g @angular/cli
+
 # Build the application
 RUN npm run build
 
