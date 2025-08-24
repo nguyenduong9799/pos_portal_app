@@ -3,13 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Brand } from '../../entities';
 import { CreateBrandDto, UpdateBrandDto, BrandResponseDto } from './dto';
+import { PaginationQueryDto, PaginationMetaDto, PaginatedResponseDto } from '../../common/dto';
 
 @Injectable()
 export class BrandsService {
   constructor(
     @InjectRepository(Brand)
     private readonly brandRepository: Repository<Brand>,
-  ) {}
+  ) { }
 
   async findAll(): Promise<BrandResponseDto[]> {
     const brands = await this.brandRepository.find({
@@ -17,6 +18,26 @@ export class BrandsService {
     });
 
     return brands.map((brand) => this.mapToResponseDto(brand));
+  }
+
+  async findAllPaginated(paginationQuery: PaginationQueryDto): Promise<PaginatedResponseDto<BrandResponseDto>> {
+    const page = Number(paginationQuery.page) || 1;
+    const limit = Number(paginationQuery.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const [brands, total] = await this.brandRepository.findAndCount({
+      relations: ['brandAccounts', 'stores', 'products'],
+      skip,
+      take: limit,
+      order: {
+        name: 'ASC',
+      },
+    });
+
+    const brandDtos = brands.map((brand) => this.mapToResponseDto(brand));
+    const meta = new PaginationMetaDto(page, limit, total);
+
+    return new PaginatedResponseDto(brandDtos, meta);
   }
 
   async findOne(id: string): Promise<BrandResponseDto> {
@@ -70,6 +91,27 @@ export class BrandsService {
     });
 
     return brands.map((brand) => this.mapToResponseDto(brand));
+  }
+
+  async findByStatusPaginated(status: string, paginationQuery: PaginationQueryDto): Promise<PaginatedResponseDto<BrandResponseDto>> {
+    const page = Number(paginationQuery.page) || 1;
+    const limit = Number(paginationQuery.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const [brands, total] = await this.brandRepository.findAndCount({
+      where: { status },
+      relations: ['brandAccounts', 'stores', 'products'],
+      skip,
+      take: limit,
+      order: {
+        name: 'ASC',
+      },
+    });
+
+    const brandDtos = brands.map((brand) => this.mapToResponseDto(brand));
+    const meta = new PaginationMetaDto(page, limit, total);
+
+    return new PaginatedResponseDto(brandDtos, meta);
   }
 
   async findByBrandCode(brandCode: string): Promise<BrandResponseDto | null> {

@@ -9,6 +9,7 @@ import {
   Query,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -17,35 +18,59 @@ import {
   ApiBody,
   ApiParam,
   ApiQuery,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { BrandsService } from './brands.service';
-import { CreateBrandDto, UpdateBrandDto, BrandResponseDto } from './dto';
+import { CreateBrandDto, UpdateBrandDto, BrandResponseDto, PaginatedBrandsResponseDto } from './dto';
+import { PaginationQueryDto, PaginatedResponseDto } from '../../common/dto';
+import { authorize } from 'passport';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('Brands')
 @Controller('brands')
 export class BrandsController {
-  constructor(private readonly brandsService: BrandsService) {}
+  constructor(private readonly brandsService: BrandsService) { }
 
   @Get()
-  @ApiOperation({ summary: 'Get all brands or filter by status' })
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get brands with pagination' })
   @ApiQuery({
     name: 'status',
     required: false,
     description: 'Filter brands by status',
   })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    description: 'Page number (1-based)',
+    type: Number,
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: 'Number of items per page',
+    type: Number,
+  })
   @ApiResponse({
     status: 200,
-    description: 'Brands retrieved successfully',
-    type: [BrandResponseDto],
+    description: 'Paginated brands retrieved successfully',
+    type: PaginatedBrandsResponseDto,
   })
-  async findAll(@Query('status') status?: string): Promise<BrandResponseDto[]> {
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async findAllPaginated(
+    @Query('status') status?: string,
+    @Query() paginationQuery?: PaginationQueryDto,
+  ): Promise<PaginatedResponseDto<BrandResponseDto>> {
     if (status) {
-      return this.brandsService.findByStatus(status);
+      return this.brandsService.findByStatusPaginated(status, paginationQuery || {});
     }
-    return this.brandsService.findAll();
+    return this.brandsService.findAllPaginated(paginationQuery || {});
   }
 
   @Get('code/:brandCode')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Get brand by brand code' })
   @ApiParam({ name: 'brandCode', description: 'Brand code' })
   @ApiResponse({
@@ -54,6 +79,7 @@ export class BrandsController {
     type: BrandResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Brand not found' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   async findByBrandCode(
     @Param('brandCode') brandCode: string,
   ): Promise<BrandResponseDto | null> {
@@ -61,6 +87,8 @@ export class BrandsController {
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Get brand by ID' })
   @ApiParam({ name: 'id', description: 'Brand ID' })
   @ApiResponse({
@@ -69,11 +97,14 @@ export class BrandsController {
     type: BrandResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Brand not found' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   async findOne(@Param('id') id: string): Promise<BrandResponseDto> {
     return this.brandsService.findOne(id);
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create a new brand' })
   @ApiBody({ type: CreateBrandDto })
@@ -83,11 +114,14 @@ export class BrandsController {
     type: BrandResponseDto,
   })
   @ApiResponse({ status: 400, description: 'Invalid brand data' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   async create(@Body() brandData: CreateBrandDto): Promise<BrandResponseDto> {
     return this.brandsService.create(brandData);
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Update brand by ID' })
   @ApiParam({ name: 'id', description: 'Brand ID' })
   @ApiBody({ type: UpdateBrandDto })
@@ -97,6 +131,7 @@ export class BrandsController {
     type: BrandResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Brand not found' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   async update(
     @Param('id') id: string,
     @Body() brandData: UpdateBrandDto,
@@ -105,11 +140,14 @@ export class BrandsController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete brand by ID' })
   @ApiParam({ name: 'id', description: 'Brand ID' })
   @ApiResponse({ status: 204, description: 'Brand deleted successfully' })
   @ApiResponse({ status: 404, description: 'Brand not found' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   async remove(@Param('id') id: string): Promise<void> {
     return this.brandsService.remove(id);
   }

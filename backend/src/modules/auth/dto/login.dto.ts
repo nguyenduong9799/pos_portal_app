@@ -9,7 +9,7 @@ export class LoginDto {
 
   @ApiProperty({
     description: 'Password for login',
-    example: 'admin123',
+    example: '123456',
   })
   password: string;
 }

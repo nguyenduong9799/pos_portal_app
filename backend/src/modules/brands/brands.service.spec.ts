@@ -12,6 +12,7 @@ describe('BrandsService', () => {
   const mockBrandRepository = {
     find: jest.fn(),
     findOne: jest.fn(),
+    findAndCount: jest.fn(),
     create: jest.fn(),
     save: jest.fn(),
     update: jest.fn(),
@@ -210,6 +211,77 @@ describe('BrandsService', () => {
       const result = await service.findByBrandCode('NONEXISTENT');
 
       expect(result).toBeNull();
+    });
+  });
+
+  describe('findAllPaginated', () => {
+    it('should return paginated brands with default parameters', async () => {
+      const mockBrands = [mockBrand];
+      const total = 1;
+      mockBrandRepository.findAndCount.mockResolvedValue([mockBrands, total]);
+
+      const result = await service.findAllPaginated({ page: 1, limit: 10 });
+
+      expect(result.data).toHaveLength(1);
+      expect(result.meta.page).toBe(1);
+      expect(result.meta.limit).toBe(10);
+      expect(result.meta.total).toBe(1);
+      expect(result.meta.totalPages).toBe(1);
+      expect(result.meta.hasNextPage).toBe(false);
+      expect(result.meta.hasPreviousPage).toBe(false);
+      expect(mockBrandRepository.findAndCount).toHaveBeenCalledWith({
+        relations: ['brandAccounts', 'stores', 'products'],
+        skip: 0,
+        take: 10,
+        order: {
+          name: 'ASC',
+        },
+      });
+    });
+
+    it('should calculate pagination metadata correctly', async () => {
+      const mockBrands = [mockBrand];
+      const total = 25;
+      mockBrandRepository.findAndCount.mockResolvedValue([mockBrands, total]);
+
+      const result = await service.findAllPaginated({ page: 2, limit: 5 });
+
+      expect(result.meta.page).toBe(2);
+      expect(result.meta.limit).toBe(5);
+      expect(result.meta.total).toBe(25);
+      expect(result.meta.totalPages).toBe(5);
+      expect(result.meta.hasNextPage).toBe(true);
+      expect(result.meta.hasPreviousPage).toBe(true);
+      expect(mockBrandRepository.findAndCount).toHaveBeenCalledWith({
+        relations: ['brandAccounts', 'stores', 'products'],
+        skip: 5,
+        take: 5,
+        order: {
+          name: 'ASC',
+        },
+      });
+    });
+  });
+
+  describe('findByStatusPaginated', () => {
+    it('should return paginated brands filtered by status', async () => {
+      const mockBrands = [mockBrand];
+      const total = 1;
+      mockBrandRepository.findAndCount.mockResolvedValue([mockBrands, total]);
+
+      const result = await service.findByStatusPaginated('Active', { page: 1, limit: 10 });
+
+      expect(result.data).toHaveLength(1);
+      expect(result.meta.total).toBe(1);
+      expect(mockBrandRepository.findAndCount).toHaveBeenCalledWith({
+        where: { status: 'Active' },
+        relations: ['brandAccounts', 'stores', 'products'],
+        skip: 0,
+        take: 10,
+        order: {
+          name: 'ASC',
+        },
+      });
     });
   });
 });

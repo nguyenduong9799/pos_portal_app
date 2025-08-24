@@ -30,7 +30,7 @@ import {
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   @Post('login')
   @ApiOperation({ summary: 'User login' })
@@ -117,7 +117,7 @@ export class AuthController {
 @ApiTags('Accounts')
 @Controller('accounts')
 export class AccountsController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
