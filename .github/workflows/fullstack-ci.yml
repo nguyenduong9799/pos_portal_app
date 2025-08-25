@@ -101,24 +101,32 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: frontend-dist
-        path: ./deploy/frontend/
+        path: ./frontend/dist/
         
     - name: Download backend artifacts
       uses: actions/download-artifact@v4
       with:
         name: backend-dist
-        path: ./deploy/backend/
+        path: ./backend/dist/
+        
+    - name: Verify build artifacts
+      run: |
+        echo "📁 Checking build artifacts"
+        echo "Frontend dist contents:"
+        ls -la ./frontend/dist/ || echo "Frontend dist not found"
+        echo "Backend dist contents:"
+        ls -la ./backend/dist/ || echo "Backend dist not found"
         
     - name: Set up Docker environment
       run: |
         echo "🐳 Setting up Docker environment"
         docker --version
-        docker-compose --version || docker compose version
+        docker compose --version || docker compose version
         
     - name: Stop existing containers
       run: |
         echo "🛑 Stopping existing containers"
-        docker-compose down --remove-orphans || docker compose down --remove-orphans || true
+        docker compose down --remove-orphans || docker compose down --remove-orphans || true
         
     - name: Clean up old images
       run: |
@@ -130,12 +138,18 @@ jobs:
     - name: Build Docker images
       run: |
         echo "🔨 Building Docker images"
-        docker-compose build --no-cache || docker compose build --no-cache
+        echo "Current directory: $(pwd)"
+        echo "Docker Compose file exists: $(test -f docker-compose.yml && echo 'Yes' || echo 'No')"
+        echo "Backend Dockerfile exists: $(test -f backend/Dockerfile && echo 'Yes' || echo 'No')"
+        echo "Frontend Dockerfile exists: $(test -f frontend/Dockerfile && echo 'Yes' || echo 'No')"
+        
+        # Build with verbose output for debugging
+        docker compose build --no-cache --progress=plain
         
     - name: Start services
       run: |
         echo "🚀 Starting services"
-        docker-compose up -d || docker compose up -d
+        docker compose up -d
         
     - name: Wait for services to be ready
       run: |
@@ -158,7 +172,7 @@ jobs:
         
         # Check frontend
         for i in {1..6}; do
-          if curl -f http://localhost:80 2>/dev/null; then
+          if curl -f http://localhost:4200 2>/dev/null; then
             echo "✅ Frontend is accessible"
             frontend_ready=true
             break
@@ -183,7 +197,7 @@ jobs:
       run: |
         echo "� Deployment Status:"
         echo "===================="
-        docker-compose ps || docker compose ps
+        docker compose ps || docker compose ps
         
         echo ""
         echo "📋 Container Details:"
@@ -198,7 +212,7 @@ jobs:
         echo ""
         echo "🌐 Service URLs:"
         echo "==============="
-        echo "Frontend: http://localhost:80"
+        echo "Frontend: http://localhost:4200"
         echo "Backend:  http://localhost:3000"
         
     - name: Run deployment tests
@@ -216,7 +230,7 @@ jobs:
         fi
         
         # Test frontend
-        if curl -f http://localhost:80 2>/dev/null; then
+        if curl -f http://localhost:4200 2>/dev/null; then
           echo "✅ Frontend is serving"
         else
           echo "❌ Frontend test failed"
@@ -236,9 +250,9 @@ jobs:
       run: |
         echo "🎉 Deployment Successful!"
         echo "========================"
-        echo "Frontend: Running on port 80"
+        echo "Frontend: Running on port 4200"
         echo "Backend:  Running on port 3000"
         echo "Docker containers are healthy and running"
         echo ""
         echo "Container status:"
-        docker-compose ps || docker compose ps
+        docker compose ps || docker compose ps
