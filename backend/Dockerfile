@@ -12,8 +12,8 @@ RUN npm ci
 # Copy source code
 COPY . .
 
-# Build the application
-RUN npm run build
+# Build the application using TypeScript compiler directly (if available in node_modules)
+RUN npx --no-install tsc -p tsconfig.build.json || ./node_modules/.bin/tsc -p tsconfig.build.json
 
 # Production stage
 FROM node:20-alpine AS production
