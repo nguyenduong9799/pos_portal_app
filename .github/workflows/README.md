@@ -19,14 +19,7 @@ This directory contains GitHub Actions workflows for the POS Portal App, configu
 - ✅ Generates test coverage
 - ✅ Performs TypeScript compilation and security audit
 
-### 3. Full Stack CI/CD (`fullstack-ci.yml`)
-**Triggers**: Push/PR to `main` branch
-- ✅ Builds both frontend and backend in parallel
-- ✅ Runs tests for both applications
-- ✅ Creates deployment-ready artifacts
-- ✅ Shows deployment structure and build sizes
-
-### 4. Security and Dependency Check (`security-check.yml`)
+### 3. Security and Dependency Check (`security-check.yml`)
 **Triggers**: Daily at 2 AM UTC, manual trigger, or package.json changes
 - ✅ Runs security audits for both applications
 - ✅ Checks for outdated packages
@@ -60,8 +53,9 @@ All workflows are configured with `runs-on: self-hosted` and include:
 # Trigger security check manually
 gh workflow run security-check.yml
 
-# Check workflow status
-gh run list --workflow=fullstack-ci.yml
+# Check workflow status  
+gh run list --workflow=frontend-ci.yml
+gh run list --workflow=backend-ci.yml
 ```
 
 ### Artifact Downloads
@@ -93,20 +87,10 @@ npm run test:e2e
 npm run test:cov
 ```
 
-## Deployment Strategy
-
-The `fullstack-ci.yml` workflow includes a deployment job that:
-1. Downloads artifacts from both frontend and backend builds
-2. Organizes them in a `./deploy/` directory structure
-3. Reports build sizes and deployment readiness
-4. Only runs on successful builds pushed to the `main` branch
-
-To extend for actual deployment, add deployment steps after the "Deploy notification" step in the deploy job.
-
 ## Monitoring and Maintenance
 
 - **Daily security audits** ensure dependencies stay secure
-- **Artifact retention** is set to appropriate periods (1-30 days)
+- **Artifact retention** is set to appropriate periods (7-30 days)
 - **Workflow triggers** are optimized to run only when relevant files change
 - **Error handling** allows CI to complete despite known issues while still reporting them
 

@@ -123,7 +123,6 @@ This repository includes comprehensive CI/CD workflows for automated building, t
 ### Available Workflows
 - **Frontend CI/CD**: Builds and tests Angular application
 - **Backend CI/CD**: Builds and tests NestJS application  
-- **Full Stack**: Combined deployment pipeline
 - **Security Check**: Daily dependency and security audits
 
 All workflows are configured for self-hosted runners and handle known issues gracefully while providing comprehensive reporting.

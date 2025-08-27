@@ -11,7 +11,6 @@ The CI/CD setup provides automated building, testing, and deployment capabilitie
 ### GitHub Actions Workflows (`.github/workflows/`)
 - **`frontend-ci.yml`** - Frontend-specific CI/CD pipeline
 - **`backend-ci.yml`** - Backend-specific CI/CD pipeline  
-- **`fullstack-ci.yml`** - Combined full-stack deployment pipeline
 - **`security-check.yml`** - Security audits and dependency monitoring
 - **`README.md`** - Detailed workflow documentation
 
@@ -44,15 +43,6 @@ The CI/CD setup provides automated building, testing, and deployment capabilitie
   - Generate test coverage
   - Security audit
   - Upload build artifacts and coverage
-
-### Full Stack CI/CD (`fullstack-ci.yml`)
-- **Triggers**: Push/PR to `main` branch
-- **Runner**: Self-hosted
-- **Features**:
-  - Parallel frontend and backend builds
-  - Combined testing
-  - Deployment artifact preparation
-  - Build size reporting
 
 ### Security Monitoring (`security-check.yml`)
 - **Triggers**: Daily schedule (2 AM UTC), manual, or package.json changes
@@ -123,19 +113,7 @@ This script checks:
 |----------|---------|-------|
 | Frontend CI | Push/PR to main/develop | `frontend/**`, workflow file |
 | Backend CI | Push/PR to main/develop | `backend/**`, workflow file |
-| Full Stack | Push/PR to main | All files |
 | Security Check | Daily schedule, manual, package changes | `**/package.json`, `**/package-lock.json` |
-
-## 🚀 Deployment Strategy
-
-The deployment job in `fullstack-ci.yml`:
-1. Runs only after successful frontend and backend builds
-2. Downloads build artifacts from both applications
-3. Organizes them in `./deploy/` directory structure
-4. Reports build sizes and deployment readiness
-5. Only executes on `main` branch pushes
-
-To extend for actual deployment, add deployment steps after the "Deploy notification" step.
 
 ## 🔧 Local Development Commands
 
