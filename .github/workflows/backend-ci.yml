@@ -104,3 +104,70 @@ jobs:
     - name: Security audit
       run: npm audit --audit-level=high
       continue-on-error: true  # Allow audit to fail for non-critical issues
+
+  backend-deploy:
+    runs-on: self-hosted
+    needs: [backend-ci, backend-quality-check]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: backend-build-${{ github.sha }}
+        path: backend/dist/
+        
+    - name: Create Dockerfile
+      run: |
+        cat > backend/Dockerfile << 'EOF'
+        FROM node:20-alpine
+        WORKDIR /app
+        COPY package*.json ./
+        RUN npm ci --only=production
+        COPY dist/ ./dist/
+        EXPOSE 3000
+        CMD ["node", "dist/main.js"]
+        EOF
+        
+    - name: Build Docker image
+      run: |
+        cd backend
+        docker build -t pos-portal-backend:${{ github.sha }} .
+        docker tag pos-portal-backend:${{ github.sha }} pos-portal-backend:latest
+        
+    - name: Create Docker network (if not exists)
+      run: |
+        docker network create pos-portal-network || true
+        
+    - name: Stop existing container
+      run: |
+        docker stop pos-portal-backend || true
+        docker rm pos-portal-backend || true
+        
+    - name: Deploy new container
+      run: |
+        docker run -d \
+          --name pos-portal-backend \
+          --restart unless-stopped \
+          --network pos-portal-network \
+          -p 3000:3000 \
+          -e NODE_ENV=production \
+          pos-portal-backend:latest
+          
+    - name: Connect frontend to network
+      run: |
+        docker network connect pos-portal-network pos-portal-frontend || true
+        
+    - name: Verify deployment
+      run: |
+        sleep 15
+        curl -f http://localhost:3000/health || curl -f http://localhost:3000 || exit 1
+        echo "Backend deployed successfully!"
+        
+    - name: Clean up old images
+      run: |
+        docker image prune -f
+        docker images pos-portal-backend --format "table {{.Repository}}:{{.Tag}}\t{{.CreatedAt}}" | tail -n +2 | head -n -2 | awk '{print $1}' | xargs -r docker rmi || true

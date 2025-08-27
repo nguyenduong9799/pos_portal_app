@@ -93,3 +93,79 @@ jobs:
           echo "No lint script found, skipping Angular linting"
         fi
       continue-on-error: true
+
+  frontend-deploy:
+    runs-on: self-hosted
+    needs: [frontend-ci, frontend-lint]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: frontend-build-${{ github.sha }}
+        path: frontend/dist/
+        
+    - name: Create Dockerfile
+      run: |
+        cat > frontend/Dockerfile << 'EOF'
+        FROM nginx:alpine
+        COPY dist/ /usr/share/nginx/html/
+        COPY nginx.conf /etc/nginx/conf.d/default.conf
+        EXPOSE 80
+        CMD ["nginx", "-g", "daemon off;"]
+        EOF
+        
+    - name: Create nginx config
+      run: |
+        cat > frontend/nginx.conf << 'EOF'
+        server {
+            listen 4201;
+            server_name localhost;
+            root /usr/share/nginx/html;
+            index index.html;
+            
+            location / {
+                try_files $uri $uri/ /index.html;
+            }
+            
+            location /api/ {
+                proxy_pass http://backend:8080/;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+            }
+        }
+        EOF
+        
+    - name: Build Docker image
+      run: |
+        cd frontend
+        docker build -t pos-portal-frontend:${{ github.sha }} .
+        docker tag pos-portal-frontend:${{ github.sha }} pos-portal-frontend:latest
+        
+    - name: Stop existing container
+      run: |
+        docker stop pos-portal-frontend || true
+        docker rm pos-portal-frontend || true
+        
+    - name: Deploy new container
+      run: |
+        docker run -d \
+          --name pos-portal-frontend \
+          --restart unless-stopped \
+          -p 4201:4201 \
+          pos-portal-frontend:latest
+          
+    - name: Verify deployment
+      run: |
+        sleep 10
+        curl -f http://localhost:4201 || exit 1
+        echo "Frontend deployed successfully!"
+        
+    - name: Clean up old images
+      run: |
+        docker image prune -f
+        docker images pos-portal-frontend --format "table {{.Repository}}:{{.Tag}}\t{{.CreatedAt}}" | tail -n +2 | head -n -2 | awk '{print $1}' | xargs -r docker rmi || true
