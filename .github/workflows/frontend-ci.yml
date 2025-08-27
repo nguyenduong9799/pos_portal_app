@@ -45,7 +45,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: frontend-build-${{ github.sha }}
-        path: frontend/dist/
+        path: frontend/dist/pos_portal_app/
         retention-days: 7
 
   frontend-deploy:
@@ -61,17 +61,25 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: frontend-build-${{ github.sha }}
-        path: frontend/dist/
+        path: frontend/dist/pos_portal_app/
         
     - name: Create Dockerfile
       run: |
         cat > frontend/Dockerfile << 'EOF'
         FROM nginx:alpine
-        COPY dist/ /usr/share/nginx/html/
+        COPY dist/pos_portal_app/browser/ /usr/share/nginx/html/
         COPY nginx.conf /etc/nginx/conf.d/default.conf
         EXPOSE 4201
         CMD ["nginx", "-g", "daemon off;"]
         EOF
+        
+    - name: Temporarily allow dist in Docker context
+      run: |
+        cd frontend
+        # Backup original .dockerignore
+        cp .dockerignore .dockerignore.bak
+        # Remove dist from .dockerignore for this build
+        grep -v "^dist$" .dockerignore > .dockerignore.tmp && mv .dockerignore.tmp .dockerignore
         
     - name: Create nginx config
       run: |
@@ -126,5 +134,9 @@ jobs:
         
     - name: Clean up old images
       run: |
+        # Restore original .dockerignore
+        cd frontend
+        mv .dockerignore.bak .dockerignore
+        # Clean up Docker images
         docker image prune -f
         docker images pos-portal-frontend --format "table {{.Repository}}:{{.Tag}}\t{{.CreatedAt}}" | tail -n +2 | head -n -2 | awk '{print $1}' | xargs -r docker rmi || true
