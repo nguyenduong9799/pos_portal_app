@@ -84,6 +84,14 @@ jobs:
         CMD ["node", "dist/main.js"]
         EOF
         
+    - name: Temporarily allow dist in Docker context
+      run: |
+        cd backend
+        # Backup original .dockerignore
+        cp .dockerignore .dockerignore.bak
+        # Remove dist from .dockerignore for this build
+        grep -v "^dist$" .dockerignore > .dockerignore.tmp && mv .dockerignore.tmp .dockerignore
+        
     - name: Build Docker image
       run: |
         cd backend
@@ -121,5 +129,9 @@ jobs:
         
     - name: Clean up old images
       run: |
+        # Restore original .dockerignore
+        cd backend
+        mv .dockerignore.bak .dockerignore
+        # Clean up Docker images
         docker image prune -f
         docker images pos-portal-backend --format "table {{.Repository}}:{{.Tag}}\t{{.CreatedAt}}" | tail -n +2 | head -n -2 | awk '{print $1}' | xargs -r docker rmi || true
