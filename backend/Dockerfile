@@ -1,21 +1,26 @@
-# Multi-stage build for NestJS backend
+# ---------------------
+# Build stage
+# ---------------------
 FROM node:20-alpine AS build
 
 WORKDIR /app
 
-# Copy package files
+# Copy package files first (better caching)
 COPY package*.json ./
 
-# Install all dependencies (including dev dependencies for build)
+# Install all deps (including dev for build)
 RUN npm ci
 
 # Copy source code
 COPY . .
 
-# Build the application using TypeScript compiler directly (if available in node_modules)
-RUN npx --no-install tsc -p tsconfig.build.json || ./node_modules/.bin/tsc -p tsconfig.build.json
+# Compile TypeScript -> dist
+RUN npx tsc -p tsconfig.build.json \
+  && [ -d dist ] || (echo "❌ Build failed: dist folder not found" && exit 1)
 
+# ---------------------
 # Production stage
+# ---------------------
 FROM node:20-alpine AS production
 
 WORKDIR /app
@@ -23,29 +28,29 @@ WORKDIR /app
 # Install dumb-init for proper signal handling
 RUN apk add --no-cache dumb-init
 
-# Create app directory and user
+# Create app user
 RUN addgroup -g 1001 -S nodejs && adduser -S nestjs -u 1001
 
-# Copy package files and install production dependencies only
+# Copy only package files, install prod deps
 COPY package*.json ./
-RUN npm ci --only=production && npm cache clean --force
+RUN npm ci --omit=dev && npm cache clean --force
 
-# Copy built application from build stage
+# Copy built code from build stage
 COPY --from=build /app/dist ./dist
 
-# Change ownership to nodejs user
+# Fix permissions
 RUN chown -R nestjs:nodejs /app
 USER nestjs
 
-# Expose port
+# Expose app port
 EXPOSE 3000
 
-# Health check
+# Healthcheck
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1
 
-# Use dumb-init to handle signals properly
+# Use dumb-init to handle signals
 ENTRYPOINT ["dumb-init", "--"]
 
-# Start the application
+# Start app
 CMD ["node", "dist/main"]
